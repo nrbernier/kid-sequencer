@@ -13,6 +13,10 @@ Four worlds, each with its own soundscape:
 
 Every world has two percussion lanes and two melodic lanes. All notes use the C-major pentatonic scale, so everything always sounds in tune. The chord objects play arpeggios.
 
+The face button switches the mood: tap it to go between **Happy** (major pentatonic) and **Sad** (Hirajoshi). Each object keeps its place in the scale, so melodies keep their shape and stay in tune.
+
+Grown-ups: **press and hold** the face for about a second to open all six moods: Happy, Wistful (Kumoi), Sad (Hirajoshi), Adventure (suspended), Dreamy (whole tone) and Mysterious (In).
+
 ## Layout
 
 - `src/RhythmRunners.jsx`: the game (React + [Tone.js](https://tonejs.github.io/))

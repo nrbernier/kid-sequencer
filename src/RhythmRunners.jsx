@@ -259,6 +259,51 @@ export const THEMES = {
   },
 };
 
+/* ---------- moods (test) ----------
+   Each mood is a 5-note scale. Every object keeps its slot (Do Re Mi Sol La),
+   only the pitch changes, so melodies keep their shape and stay in tune.
+   note: pitch-class changes for single notes; chords: what each chord becomes. */
+const MOODS = {
+  happy: { name: "Happy", scale: "Major", icon: "happy", bg: "#ffd166", fg: "#5a3a00", tint: null,
+    note: {}, label: {}, chords: {} },
+  wistful: { name: "Wistful", scale: "Kumoi", icon: "meh", bg: "#9fc7e8", fg: "#1d3550", tint: "rgba(40,60,110,.12)",
+    note: { E: "Eb" }, label: { Mi: "Mi♭" },
+    chords: { "Do M": ["Do m", { E: "Eb" }], "La m": ["Re m", { C: "D", E: "F" }], "Fa M": ["Fa M", {}] } },
+  sad: { name: "Sad", scale: "Hirajoshi", icon: "sad", bg: "#5b63c9", fg: "#eef0ff", tint: "rgba(24,16,72,.24)",
+    note: { E: "Eb", A: "Ab" }, label: { Mi: "Mi♭", La: "La♭" },
+    chords: { "Do M": ["Do m", { E: "Eb" }], "La m": ["La♭ M", { A: "Ab", E: "Eb" }], "Fa M": ["Fa m", { A: "Ab" }] } },
+  adventure: { name: "Adventure", scale: "Suspended", icon: "peak", bg: "#7fcf8a", fg: "#123a1a", tint: "rgba(255,190,90,.08)",
+    note: { E: "F", A: "Bb" }, label: { Mi: "Fa", La: "Si♭" },
+    chords: { "Do M": ["Do sus4", { E: "F" }], "La m": ["Si♭ M", { A: "Bb", C: "D", E: "F" }], "Fa M": ["Fa sus2", { A: "G" }] } },
+  dreamy: { name: "Dreamy", scale: "Whole tone", icon: "spark", bg: "#d6a7ff", fg: "#3a1660", tint: "rgba(150,90,220,.16)",
+    note: { G: "F#", A: "G#" }, label: { Sol: "Fa♯", La: "Sol♯" },
+    chords: { "Do M": ["Do+", { G: "G#" }], "La m": ["Re+", { A: "A#", C: "D", E: "F#" }], "Fa M": ["Mi+", { F: "E", A: "G#" }] } },
+  mysterious: { name: "Mysterious", scale: "In", icon: "moon", bg: "#3f3a66", fg: "#e6e2ff", tint: "rgba(10,6,40,.34)",
+    note: { D: "Db", E: "F", A: "Ab" }, label: { Re: "Re♭", Mi: "Fa", La: "La♭" },
+    chords: { "Do M": ["Do sus4", { E: "F" }], "La m": ["Re♭ M", { A: "Ab", C: "Db", E: "F" }], "Fa M": ["Fa m", { A: "Ab" }] } },
+};
+const MOOD_ORDER = ["happy", "wistful", "sad", "adventure", "dreamy", "mysterious"];
+
+const shiftNote = (n, map) => {
+  const [, pc, oct] = n.match(/^([A-G][#b]?)(\d)$/);
+  return (map[pc] ?? pc) + oct;
+};
+const toMood = (item, m) => {
+  if (item.kind === "chord") {
+    const [label, map] = m.chords[item.label] ?? [item.label, {}];
+    return { ...item, label, notes: item.notes.map((n) => shiftNote(n, map)) };
+  }
+  if (item.note) return { ...item, label: m.label[item.label] ?? item.label, note: shiftNote(item.note, m.note) };
+  return item; // percussion is the same in every mood
+};
+const moodCache = new Map();
+const inMood = (item, mood) => {
+  if (mood === "happy") return item;
+  const key = mood + "|" + item.id;
+  if (!moodCache.has(key)) moodCache.set(key, toMood(item, MOODS[mood]));
+  return moodCache.get(key);
+};
+
 const findItem = (themeId, laneId, itemId) =>
   THEMES[themeId].items[laneId]?.find((i) => i.id === itemId);
 
@@ -274,6 +319,12 @@ export default function RhythmRunners() {
   const [eraser, setEraser] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [tempo, setTempo] = useState(104);
+  const [mood, setMood] = useState("happy");
+  const [moodOpen, setMoodOpen] = useState(false);
+  const moodRef = useRef(mood);
+  moodRef.current = mood;
+  const holdTimer = useRef(null);
+  const heldOpen = useRef(false);
   const [step, setStep] = useState(-1);
   const [shakes, setShakes] = useState({});
 
@@ -309,7 +360,7 @@ export default function RhythmRunners() {
         const item = findItem(th, lane.id, itemId);
         if (!item) return;
         hits.push(`${lane.id}-${s}`);
-        playItem(audio.current, item, time, th);
+        playItem(audio.current, inMood(item, moodRef.current), time, th);
       });
       Tone.Draw.schedule(() => {
         setStep(s);
@@ -330,7 +381,7 @@ export default function RhythmRunners() {
 
   const preview = async (item) => {
     const A = await buildAudio();
-    playItem(A, item, Tone.now(), themeRef.current);
+    playItem(A, inMood(item, moodRef.current), Tone.now(), themeRef.current);
   };
 
   const togglePlay = async () => {
@@ -392,6 +443,31 @@ export default function RhythmRunners() {
 
   const clearAll = () => setGrids((all) => ({ ...all, [theme]: {} }));
 
+  /* Mood button: a tap switches Happy <-> Sad; pressing and holding it for about a
+     second opens the full mood picker (a hidden extra for grown-ups). */
+  const moodDown = () => {
+    heldOpen.current = false;
+    clearTimeout(holdTimer.current);
+    holdTimer.current = setTimeout(() => { heldOpen.current = true; setMoodOpen(true); }, 900);
+  };
+  const moodCancel = () => clearTimeout(holdTimer.current);
+  const moodTap = () => {
+    clearTimeout(holdTimer.current);
+    if (heldOpen.current) { heldOpen.current = false; return; } // the hold already opened the picker
+    if (moodOpen) { setMoodOpen(false); return; }
+    pickMood(mood === "happy" ? "sad" : "happy");
+  };
+
+  /* picking a mood plays the world's first chord so the change is heard right away */
+  const pickMood = (next) => {
+    moodRef.current = next;
+    setMood(next);
+    setMoodOpen(false);
+    const chordLane = THEMES[theme].lanes[3].id;
+    const chord = THEMES[theme].items[chordLane].find((i) => i.kind === "chord");
+    if (chord) preview(chord);
+  };
+
   /* ---------- fullscreen (not available on iPhone Safari: use Add to Home Screen there) ---------- */
   const canFullscreen = typeof document !== "undefined" &&
     !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
@@ -442,6 +518,28 @@ export default function RhythmRunners() {
               </button>
             ))}
           </div>
+          <div className="rr-mood-wrap">
+            <button className="rr-tool rr-mood" onClick={moodTap}
+              onPointerDown={moodDown} onPointerUp={moodCancel} onPointerLeave={moodCancel} onPointerCancel={moodCancel}
+              onContextMenu={(e) => e.preventDefault()}
+              style={{ background: MOODS[mood].bg, color: MOODS[mood].fg }}
+              title={`Mood: ${MOODS[mood].name}`} aria-label={`Mood: ${MOODS[mood].name}`} aria-expanded={moodOpen}>
+              <span className="rr-ic"><Icon name={MOODS[mood].icon} /></span>
+            </button>
+            {moodOpen && <div className="rr-moods-backdrop" onClick={() => setMoodOpen(false)} />}
+            {moodOpen && (
+              <div className="rr-moods" role="menu">
+                {MOOD_ORDER.map((id) => (
+                  <button key={id} role="menuitem" className={`rr-mood-opt ${mood === id ? "cur" : ""}`} onClick={() => pickMood(id)}>
+                    <span className="rr-mood-ic" style={{ background: MOODS[id].bg, color: MOODS[id].fg }}>
+                      <span className="rr-ic"><Icon name={MOODS[id].icon} /></span>
+                    </span>
+                    <span className="rr-mood-txt"><b>{MOODS[id].name}</b><small>{MOODS[id].scale}</small></span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           <button className={`rr-tool ${eraser ? "sel" : ""}`} onClick={() => setEraser(!eraser)} title="Eraser">
             <span className="rr-ic"><EraserIcon /></span>
           </button>
@@ -454,7 +552,7 @@ export default function RhythmRunners() {
         </div>
       </header>
 
-      <div className={`rr-scene ${T.sceneClass}`}>
+      <div className={`rr-scene ${T.sceneClass}`} style={{ "--mood-tint": MOODS[mood].tint || "transparent" }}>
         <div className="rr-rays" />
         {T.amb === "bubble" &&
           [...Array(9)].map((_, i) => (
@@ -534,7 +632,7 @@ export default function RhythmRunners() {
                   }}
                 >
                   <span className="rr-pal-ic">{item.icon}</span>
-                  <span className="rr-pal-lb">{item.label}</span>
+                  <span className="rr-pal-lb">{inMood(item, mood).label}</span>
                 </button>
               );
             })}
@@ -597,6 +695,23 @@ const css = `
   background:#3a4570;color:#eaf6ff;box-shadow:inset -3px -3px 0 #28304f,inset 3px 3px 0 #5a68a0,0 3px 0 var(--ink);
 }
 .rr-tool:active{transform:translateY(2px);}
+/* mood picker: the button wears the current mood's colour; the scene takes a light tint */
+.rr-mood-wrap{position:relative;}
+.rr-tool.rr-mood{-webkit-touch-callout:none;touch-action:manipulation;}
+.rr-moods-backdrop{position:fixed;inset:0;z-index:19;}
+.rr-tool.rr-mood{box-shadow:inset -3px -3px 0 rgba(0,0,0,.22),inset 3px 3px 0 rgba(255,255,255,.35),0 3px 0 var(--ink);}
+.rr-moods{
+  position:absolute;right:0;top:calc(100% + 8px);z-index:20;display:flex;flex-direction:column;gap:3px;
+  padding:4px;min-width:178px;background:#20233a;border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink);
+}
+.rr-mood-opt{display:flex;align-items:center;gap:8px;padding:4px 6px;border:none;background:transparent;color:#eaf6ff;cursor:pointer;text-align:left;}
+.rr-mood-opt:hover,.rr-mood-opt.cur{background:rgba(255,255,255,.14);}
+.rr-mood-ic{width:28px;height:28px;display:grid;place-items:center;flex-shrink:0;}
+.rr-mood-ic .rr-ic{width:18px;height:18px;}
+.rr-mood-txt{display:flex;flex-direction:column;line-height:1.1;}
+.rr-mood-txt b{font-size:14px;}
+.rr-mood-txt small{font-size:11px;opacity:.65;}
+.rr-scene::before{content:"";position:absolute;inset:0;background:var(--mood-tint,transparent);pointer-events:none;transition:background .4s steps(4,end);}
 .rr-tool.sel{background:#ffd166;box-shadow:inset -3px -3px 0 #d9a53a,inset 3px 3px 0 #ffe9a8,0 3px 0 var(--ink);}
 
 /* ---------- scene: banded skies (hard colour steps, no smooth gradients) ---------- */
