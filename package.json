@@ -1,0 +1,18 @@
+{
+  "name": "kid-sequencer",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A music sequencing game for children: place objects on the characters' paths to make music.",
+  "scripts": {
+    "build": "esbuild src/main.jsx --bundle --minify --format=esm --jsx=automatic --define:process.env.NODE_ENV=\\\"production\\\" --outfile=docs/assets/app.js",
+    "dev": "esbuild src/main.jsx --bundle --format=esm --jsx=automatic --outfile=docs/assets/app.js --servedir=docs --watch"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tone": "^15.0.4"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0"
+  }
+}
