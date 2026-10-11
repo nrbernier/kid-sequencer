@@ -2,6 +2,8 @@
 
 A music sequencing game for children. Characters race across the screen; place objects on their paths and each one shakes and plays a sound when a character reaches it.
 
+**▶ Play it: [nrbernier.github.io/kid-sequencer](https://nrbernier.github.io/kid-sequencer/)**
+
 Four worlds, each with its own soundscape:
 
 - 🌊 **Reef**: dark, muted, long underwater tones
