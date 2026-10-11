@@ -6,7 +6,7 @@ import {
   Shell, Starfish, Rock, Coral, Bubble, Urchin,
   Log, Drum, Coconut, SeedPod, Fruit, Flower,
   Asteroid, Satellite, Laser, Sparkle, Planet, StarIcon, Comet,
-  Anvil, Barrel, Lid, Hydrant, Sign, Boombox, Vinyl,
+  Anvil, Barrel, Lid, Hydrant, Sign, Boombox, Cone,
 } from "./pixel.jsx";
 
 /* ============================================================
@@ -215,8 +215,8 @@ export const THEMES = {
         { id: "sg-a", label: "La",  icon: <Sign color="#5a8fc8" />, kind: "note", voice: "bell", note: "A5" },
       ],
       skater: [
-        { id: "vn-c", label: "Do",   icon: <Vinyl color="#e0635a" />, kind: "soft", voice: "keys", note: "C4" },
-        { id: "vn-g", label: "Sol",  icon: <Vinyl color="#6fb07a" />, kind: "soft", voice: "keys", note: "G4" },
+        { id: "cn-c", label: "Do",   icon: <Cone color="#e0635a" />, kind: "soft", voice: "keys", note: "C4" },
+        { id: "cn-g", label: "Sol",  icon: <Cone color="#6fb07a" />, kind: "soft", voice: "keys", note: "G4" },
         { id: "bb-c",  label: "Do M", icon: <Boombox color="#e0635a" />, kind: "chord", voice: "keys", notes: ["C3","G3","E4","C5"] },
         { id: "bb-am", label: "La m", icon: <Boombox color="#5a8fc8" />, kind: "chord", voice: "keys", notes: ["A2","E3","C4","A4"] },
         { id: "bb-f",  label: "Fa M", icon: <Boombox color="#9a7ac0" />, kind: "chord", voice: "keys", notes: ["F2","C3","A3","F4"] },
@@ -228,7 +228,7 @@ export const THEMES = {
       [2, 6, 10, 14].forEach((s) => (g[`runner-${s}`] = "lid"));
       g["runner-15"] = "hydrant";
       g["cyclist-0"] = "sg-c"; g["cyclist-3"] = "sg-e"; g["cyclist-6"] = "sg-g"; g["cyclist-10"] = "sg-a"; g["cyclist-13"] = "sg-g";
-      g["skater-0"] = "bb-c"; g["skater-8"] = "bb-f";
+      g["skater-0"] = "bb-c"; g["skater-8"] = "bb-f"; g["skater-4"] = "cn-g"; g["skater-12"] = "cn-c";
       return g;
     },
     defaultSel: { lane: "cyclist", item: "sg-c" },

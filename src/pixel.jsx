@@ -556,17 +556,18 @@ export const G = {
     "...kpk..",
     "..kkkkk.",
   ],
-  vinyl: [
-    "...kkkk...",
-    ".kkddddkk.",
-    ".kgddddgk.",
-    "kgddmmddgk",
-    "kdmmkkmmdk",
-    "kdmmkkmmdk",
-    "kgddmmddgk",
-    ".kgddddgk.",
-    ".kkddddkk.",
-    "...kkkk...",
+  cone: [ // traffic cone with a reflective band
+    "....kk....",
+    "...kmlk...",
+    "...kmmk...",
+    "..kwwwwk..",
+    "..kmlmmk..",
+    ".kmlmmmmk.",
+    ".kwwwwwwk.",
+    "kmlmmmmmmk",
+    "kkkkkkkkkk",
+    "kddddddddk",
+    "kkkkkkkkkk",
   ],
   boombox: [
     "...kkkkkk...",
@@ -659,7 +660,7 @@ export const Barrel = () => <Sprite grid={G.barrel} pal={{ u: "#4a6fa8", d: "#2f
 export const Lid = () => <Sprite grid={G.lid} pal={{ m: "#94929c", l: "#cfccd6", d: "#5d5a66" }} />;
 export const Hydrant = () => <Sprite grid={G.hydrant} pal={{ r: "#d9483f", l: "#f08a80", d: "#8a2a24" }} />;
 export const Sign = ({ color }) => <Sprite grid={G.sign} pal={{ ...tones(color), w: "#efe8e6", p: "#8a8690" }} />;
-export const Vinyl = ({ color }) => <Sprite grid={G.vinyl} pal={{ m: color, d: "#2a2c38", g: "#4a4d5e" }} />;
+export const Cone = ({ color }) => <Sprite grid={G.cone} pal={{ ...tones(color), w: "#f4f1ea", d: "#3f4055" }} />;
 export const Boombox = ({ color }) => <Sprite grid={G.boombox} pal={{ ...tones(color), d: "#8d949f" }} />;
 
 /* ======================= UI icons ======================= */
