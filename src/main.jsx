@@ -1,5 +1,5 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
-import ReefRhythms from "./ReefRhythms.jsx";
+import RhythmRunners from "./RhythmRunners.jsx";
 
-createRoot(document.getElementById("root")).render(<ReefRhythms />);
+createRoot(document.getElementById("root")).render(<RhythmRunners />);

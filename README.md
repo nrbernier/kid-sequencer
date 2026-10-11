@@ -1,4 +1,4 @@
-# Récif Rythmes 🐠
+# Rhythm Runners 🐠
 
 A music sequencing game for children. Characters race across the screen; place objects on their paths and each one shakes and plays a sound when a character reaches it.
 
@@ -13,7 +13,7 @@ Every world has two percussion lanes and two melodic lanes. All notes use the C-
 
 ## Layout
 
-- `src/ReefRhythms.jsx`: the game (React + [Tone.js](https://tonejs.github.io/))
+- `src/RhythmRunners.jsx`: the game (React + [Tone.js](https://tonejs.github.io/))
 - `docs/`: the published site (`index.html` + bundled `assets/app.js`), served by GitHub Pages
 
 ## Edit it
