@@ -1,4 +1,4 @@
-# Rhythm Runners 🐠
+# Rhythm Runners
 
 A music sequencing game for children. Characters race across the screen; place objects on their paths and each one shakes and plays a sound when a character reaches it.
 
@@ -11,9 +11,9 @@ Four worlds, each with its own soundscape:
 - 🪐 **Space**: 8-bit chiptune bips
 - 🏙️ **City**: industrial clangs, bicycle bells and electric piano
 
-Every world has two percussion lanes and two melodic lanes. All notes use the C-major pentatonic scale, so everything always sounds in tune. The chord objects play arpeggios.
+Every world has two percussion lanes and two melodic lanes. The chord objects play arpeggios.
 
-The face button switches the mood: tap it to go between **Happy** (major pentatonic) and **Sad** (Hirajoshi). Each object keeps its place in the scale, so melodies keep their shape and stay in tune.
+Notes always come from a five-note scale, so everything sounds in tune. The face button switches the mood: tap it to go between **Happy** (C major pentatonic) and **Sad** (Hirajoshi). Each object keeps its place in the scale, so melodies keep their shape.
 
 Grown-ups: **press and hold** the face for about a second to open all six moods: Happy, Wistful (Kumoi), Sad (Hirajoshi), Adventure (suspended), Dreamy (whole tone) and Mysterious (In).
 
