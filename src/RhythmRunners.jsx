@@ -1,6 +1,13 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import * as Tone from "tone";
 import { createEngine, playItem } from "./audioEngine.js";
+import {
+  Sprite, CharSprite, WORLD_ICON, Icon, EraserIcon, TrashIcon,
+  Shell, Starfish, Rock, Coral, Bubble, Urchin,
+  Log, Drum, Coconut, SeedPod, Fruit, Flower,
+  Asteroid, Satellite, Laser, Sparkle, Planet, StarIcon, Comet,
+  Anvil, Barrel, Lid, Hydrant, Sign, Boombox, Vinyl,
+} from "./pixel.jsx";
 
 /* ============================================================
    RHYTHM RUNNERS — music sequencing for kids
@@ -17,220 +24,8 @@ const STEPS = 16;
 
 const THEME_ORDER = ["aqua", "jungle", "space", "city"];
 
-/* ---------- SVG objects: aquatic ---------- */
-const Shell = ({ color }) => (
-  <svg viewBox="0 0 24 24" width="100%" height="100%">
-    <path d="M12 21 C5 21 2.5 14 2.5 10.5 A9.5 9.5 0 0 1 21.5 10.5 C21.5 14 19 21 12 21 Z"
-      fill={color} stroke="rgba(0,0,0,.25)" strokeWidth="1" />
-    <path d="M12 21 L12 4 M12 21 L6 6.5 M12 21 L18 6.5" stroke="rgba(255,255,255,.55)" strokeWidth="1.4" fill="none" strokeLinecap="round"/>
-  </svg>
-);
-const Starfish = ({ color }) => (
-  <svg viewBox="0 0 24 24" width="100%" height="100%">
-    <path d="M12 2 L14.6 8.6 L21.8 9.2 L16.4 13.9 L18 21 L12 17.2 L6 21 L7.6 13.9 L2.2 9.2 L9.4 8.6 Z"
-      fill={color} stroke="rgba(0,0,0,.25)" strokeWidth="1.4" strokeLinejoin="round" />
-    <circle cx="12" cy="11.6" r="1.6" fill="rgba(255,255,255,.6)" />
-  </svg>
-);
-const Rock = () => (
-  <svg viewBox="0 0 24 24" width="100%" height="100%">
-    <path d="M4 18 C2 14 4 8 9 7 C12 4 19 6 20 10 C23 13 21 18 17 19 C13 21 6 21 4 18 Z"
-      fill="#8d7b8e" stroke="rgba(0,0,0,.3)" strokeWidth="1" />
-    <path d="M8 12 L11 14 M14 10 L16 12" stroke="rgba(255,255,255,.35)" strokeWidth="1.4" strokeLinecap="round" />
-  </svg>
-);
-const Coral = () => (
-  <svg viewBox="0 0 24 24" width="100%" height="100%">
-    <path d="M12 21 V10 M12 13 C8 12 6 9 6 5 M12 11 C16 10 18 7 18 4 M12 17 C9 17 8 15 8 13"
-      stroke="#ff9776" strokeWidth="3.4" fill="none" strokeLinecap="round" />
-  </svg>
-);
-const Bubble = () => (
-  <svg viewBox="0 0 24 24" width="100%" height="100%">
-    <circle cx="12" cy="12" r="8.5" fill="rgba(190,235,255,.85)" stroke="rgba(255,255,255,.9)" strokeWidth="1.6" />
-    <circle cx="9" cy="9" r="2.4" fill="rgba(255,255,255,.9)" />
-  </svg>
-);
-const Urchin = () => (
-  <svg viewBox="0 0 24 24" width="100%" height="100%">
-    <g stroke="#5d5a88" strokeWidth="1.8" strokeLinecap="round">
-      {Array.from({ length: 10 }).map((_, i) => {
-        const a = (i / 10) * Math.PI * 2;
-        return <line key={i} x1={12 + Math.cos(a) * 4} y1={12 + Math.sin(a) * 4}
-          x2={12 + Math.cos(a) * 10} y2={12 + Math.sin(a) * 10} />;
-      })}
-    </g>
-    <circle cx="12" cy="12" r="5" fill="#7a76b8" />
-  </svg>
-);
-/* ---------- SVG objects: jungle ---------- */
-const Log = () => (
-  <svg viewBox="0 0 24 24" width="100%" height="100%">
-    <rect x="2" y="8" width="18" height="9" rx="4.5" fill="#8a5a33" stroke="rgba(0,0,0,.3)" strokeWidth="1"/>
-    <ellipse cx="20" cy="12.5" rx="2.6" ry="4.5" fill="#c99b6a" stroke="rgba(0,0,0,.3)" strokeWidth="1"/>
-    <ellipse cx="20" cy="12.5" rx="1.1" ry="2" fill="#8a5a33"/>
-    <path d="M5 10.5 h8 M5 14.5 h6" stroke="rgba(0,0,0,.2)" strokeWidth="1.2" strokeLinecap="round"/>
-  </svg>
-);
-const Drum = () => (
-  <svg viewBox="0 0 24 24" width="100%" height="100%">
-    <path d="M5 8 L8 20 H16 L19 8 Z" fill="#c96f3b" stroke="rgba(0,0,0,.3)" strokeWidth="1"/>
-    <ellipse cx="12" cy="8" rx="7" ry="3" fill="#f3e0c0" stroke="rgba(0,0,0,.3)" strokeWidth="1"/>
-    <path d="M6.5 11 L10 17 M17.5 11 L14 17 M12 11.5 V17.5" stroke="rgba(0,0,0,.25)" strokeWidth="1.1"/>
-  </svg>
-);
-const Coconut = () => (
-  <svg viewBox="0 0 24 24" width="100%" height="100%">
-    <circle cx="12" cy="13" r="8.5" fill="#7a4f2a" stroke="rgba(0,0,0,.3)" strokeWidth="1"/>
-    <circle cx="9.5" cy="10.5" r="1.1" fill="#4a2e15"/>
-    <circle cx="13.5" cy="9.8" r="1.1" fill="#4a2e15"/>
-    <circle cx="11.8" cy="13" r="1.1" fill="#4a2e15"/>
-    <path d="M5 16 C8 18 16 18 19 16" stroke="rgba(255,255,255,.2)" strokeWidth="1.4" fill="none"/>
-  </svg>
-);
-const SeedPod = () => (
-  <svg viewBox="0 0 24 24" width="100%" height="100%">
-    <path d="M12 3 C7 8 6 14 12 21 C18 14 17 8 12 3 Z" fill="#a9c15a" stroke="rgba(0,0,0,.3)" strokeWidth="1"/>
-    <circle cx="12" cy="9" r="1.2" fill="#6d8430"/>
-    <circle cx="12" cy="13" r="1.2" fill="#6d8430"/>
-    <circle cx="12" cy="17" r="1.2" fill="#6d8430"/>
-  </svg>
-);
-const Fruit = ({ color }) => (
-  <svg viewBox="0 0 24 24" width="100%" height="100%">
-    <circle cx="12" cy="14" r="8" fill={color} stroke="rgba(0,0,0,.25)" strokeWidth="1"/>
-    <path d="M12 6 C12 4 13 3 15 2.5" stroke="#5a7a2e" strokeWidth="1.8" fill="none" strokeLinecap="round"/>
-    <path d="M12 5.5 C14.5 5 16.5 6 17 8 C14.5 8.5 12.5 7.5 12 5.5 Z" fill="#7bb544"/>
-    <circle cx="9" cy="11.5" r="2" fill="rgba(255,255,255,.35)"/>
-  </svg>
-);
-const Flower = ({ color }) => (
-  <svg viewBox="0 0 24 24" width="100%" height="100%">
-    <g fill={color} stroke="rgba(0,0,0,.2)" strokeWidth="0.8">
-      {Array.from({ length: 6 }).map((_, i) => {
-        const a = (i / 6) * Math.PI * 2 - Math.PI / 2;
-        return <ellipse key={i} cx={12 + Math.cos(a) * 5.5} cy={12 + Math.sin(a) * 5.5}
-          rx="4" ry="4" />;
-      })}
-    </g>
-    <circle cx="12" cy="12" r="3.4" fill="#ffe066" stroke="rgba(0,0,0,.25)" strokeWidth="1"/>
-  </svg>
-);
-/* ---------- SVG objects: space ---------- */
-const Asteroid = () => (
-  <svg viewBox="0 0 24 24" width="100%" height="100%">
-    <path d="M5 16 C3 12 5 6 10 5 C14 3 20 6 20.5 11 C22 14 19 19 15 19.5 C11 21 6.5 19.5 5 16 Z"
-      fill="#9aa3b2" stroke="rgba(0,0,0,.35)" strokeWidth="1"/>
-    <circle cx="9" cy="10" r="1.8" fill="#6c7686"/>
-    <circle cx="15" cy="14" r="2.3" fill="#6c7686"/>
-    <circle cx="14" cy="8.5" r="1" fill="#6c7686"/>
-  </svg>
-);
-const Satellite = () => (
-  <svg viewBox="0 0 24 24" width="100%" height="100%">
-    <rect x="1.5" y="9" width="6" height="6" rx="1" fill="#4d7cc9" stroke="rgba(0,0,0,.3)" strokeWidth="1"/>
-    <rect x="16.5" y="9" width="6" height="6" rx="1" fill="#4d7cc9" stroke="rgba(0,0,0,.3)" strokeWidth="1"/>
-    <rect x="8.5" y="8" width="7" height="8" rx="2" fill="#cfd6e4" stroke="rgba(0,0,0,.3)" strokeWidth="1"/>
-    <path d="M4.5 10.5 v3 M19.5 10.5 v3" stroke="rgba(0,0,0,.25)" strokeWidth="1"/>
-    <circle cx="12" cy="12" r="1.6" fill="#ff6b6b"/>
-    <path d="M12 8 V5 M10.5 5 h3" stroke="#cfd6e4" strokeWidth="1.4" strokeLinecap="round" fill="none"/>
-  </svg>
-);
-const Laser = () => (
-  <svg viewBox="0 0 24 24" width="100%" height="100%">
-    <path d="M13.5 2 L6 13 h4.5 L9 22 L18 10 h-5 Z" fill="#ffe14d" stroke="#e8a300" strokeWidth="1.2" strokeLinejoin="round"/>
-  </svg>
-);
-const Sparkle = () => (
-  <svg viewBox="0 0 24 24" width="100%" height="100%">
-    <path d="M12 2 C13 8 15 10 21 12 C15 14 13 16 12 22 C11 16 9 14 3 12 C9 10 11 8 12 2 Z"
-      fill="#bde3ff" stroke="rgba(255,255,255,.8)" strokeWidth="1"/>
-  </svg>
-);
-const Planet = ({ color }) => (
-  <svg viewBox="0 0 24 24" width="100%" height="100%">
-    <circle cx="12" cy="12" r="7" fill={color} stroke="rgba(0,0,0,.3)" strokeWidth="1"/>
-    <ellipse cx="12" cy="12.5" rx="11" ry="3.4" fill="none" stroke="rgba(255,255,255,.75)" strokeWidth="1.6"
-      transform="rotate(-16 12 12)"/>
-    <circle cx="9.5" cy="9.5" r="2" fill="rgba(255,255,255,.3)"/>
-  </svg>
-);
-const StarIcon = ({ color }) => (
-  <svg viewBox="0 0 24 24" width="100%" height="100%">
-    <path d="M12 2.5 L14.7 8.9 L21.5 9.5 L16.3 14 L17.9 20.8 L12 17.2 L6.1 20.8 L7.7 14 L2.5 9.5 L9.3 8.9 Z"
-      fill={color} stroke="rgba(0,0,0,.25)" strokeWidth="1" strokeLinejoin="round"/>
-  </svg>
-);
-const Comet = ({ color }) => (
-  <svg viewBox="0 0 24 24" width="100%" height="100%">
-    <path d="M22 3 C16 6 11 9 8.5 12 L13 16 C15.5 13 19 8.5 22 3 Z" fill="rgba(255,255,255,.45)"/>
-    <path d="M22 2.5 C17 4 12 7 9.5 9.5 L15 14.5 C17 11.5 20 7 22 2.5 Z" fill={color} opacity=".6"/>
-    <circle cx="9" cy="15" r="5.5" fill={color} stroke="rgba(0,0,0,.3)" strokeWidth="1"/>
-    <circle cx="7.4" cy="13.4" r="1.7" fill="rgba(255,255,255,.5)"/>
-  </svg>
-);
-/* ---------- SVG objects: city ---------- */
-const Anvil = () => (
-  <svg viewBox="0 0 24 24" width="100%" height="100%">
-    <path d="M3 7 H21 C21 10 18 12 14.5 12.5 L14.5 16 H17 V19 H7 V16 H9.5 L9.5 12.5 C6 12.5 3.5 10.5 3 7 Z"
-      fill="#7c8494" stroke="rgba(0,0,0,.35)" strokeWidth="1" strokeLinejoin="round"/>
-    <path d="M4.5 8.2 H19" stroke="rgba(255,255,255,.3)" strokeWidth="1.2" strokeLinecap="round"/>
-  </svg>
-);
-const Barrel = () => (
-  <svg viewBox="0 0 24 24" width="100%" height="100%">
-    <rect x="6" y="4" width="12" height="17" rx="2" fill="#4d7cc9" stroke="rgba(0,0,0,.35)" strokeWidth="1"/>
-    <path d="M6 9 H18 M6 14 H18 M6 17.5 H18" stroke="rgba(0,0,0,.3)" strokeWidth="1.4"/>
-    <ellipse cx="12" cy="4.5" rx="6" ry="1.6" fill="#6f9be0" stroke="rgba(0,0,0,.3)" strokeWidth="1"/>
-  </svg>
-);
-const Lid = () => (
-  <svg viewBox="0 0 24 24" width="100%" height="100%">
-    <ellipse cx="12" cy="14" rx="9.5" ry="4.6" fill="#9aa3b2" stroke="rgba(0,0,0,.35)" strokeWidth="1"/>
-    <ellipse cx="12" cy="12.6" rx="9.5" ry="4.6" fill="#c2c9d4" stroke="rgba(0,0,0,.35)" strokeWidth="1"/>
-    <path d="M9.5 10.5 C9.5 8.8 14.5 8.8 14.5 10.5" stroke="#5d6570" strokeWidth="1.8" fill="none" strokeLinecap="round"/>
-  </svg>
-);
-const Hydrant = () => (
-  <svg viewBox="0 0 24 24" width="100%" height="100%">
-    <path d="M8.5 9 C8.5 6 10 4.5 12 4.5 C14 4.5 15.5 6 15.5 9 L15.5 19 H8.5 Z"
-      fill="#e94f4f" stroke="rgba(0,0,0,.3)" strokeWidth="1"/>
-    <rect x="7" y="19" width="10" height="2.4" rx="1" fill="#c23a3a"/>
-    <rect x="10.4" y="2.6" width="3.2" height="2.4" rx="1" fill="#c23a3a"/>
-    <circle cx="12" cy="12" r="2" fill="#ffd9d9" stroke="rgba(0,0,0,.25)" strokeWidth="0.8"/>
-    <rect x="4.5" y="10.5" width="4" height="3" rx="1.4" fill="#c23a3a"/>
-    <rect x="15.5" y="10.5" width="4" height="3" rx="1.4" fill="#c23a3a"/>
-  </svg>
-);
-const Sign = ({ color }) => (
-  <svg viewBox="0 0 24 24" width="100%" height="100%">
-    <rect x="11.2" y="12" width="1.6" height="10" fill="#8d949f"/>
-    <circle cx="12" cy="8" r="6.5" fill={color} stroke="#f2f5fa" strokeWidth="1.8"/>
-    <circle cx="12" cy="8" r="6.5" fill="none" stroke="rgba(0,0,0,.25)" strokeWidth="0.8"/>
-    <circle cx="10" cy="6.2" r="1.7" fill="rgba(255,255,255,.35)"/>
-  </svg>
-);
-const Boombox = ({ color }) => (
-  <svg viewBox="0 0 24 24" width="100%" height="100%">
-    <path d="M8 6 C8.5 4 15.5 4 16 6" stroke="#3a3f4a" strokeWidth="1.6" fill="none"/>
-    <rect x="2.5" y="6.5" width="19" height="12" rx="2.4" fill={color} stroke="rgba(0,0,0,.3)" strokeWidth="1"/>
-    <circle cx="7.5" cy="12.5" r="3.4" fill="#2c303a" stroke="rgba(255,255,255,.4)" strokeWidth="1"/>
-    <circle cx="16.5" cy="12.5" r="3.4" fill="#2c303a" stroke="rgba(255,255,255,.4)" strokeWidth="1"/>
-    <circle cx="7.5" cy="12.5" r="1.2" fill="#7d8596"/>
-    <circle cx="16.5" cy="12.5" r="1.2" fill="#7d8596"/>
-    <rect x="10.6" y="9" width="2.8" height="1.6" rx="0.6" fill="rgba(255,255,255,.5)"/>
-  </svg>
-);
-const Vinyl = ({ color }) => (
-  <svg viewBox="0 0 24 24" width="100%" height="100%">
-    <circle cx="12" cy="12" r="9.5" fill="#23262e" stroke="rgba(0,0,0,.4)" strokeWidth="1"/>
-    <circle cx="12" cy="12" r="7" fill="none" stroke="rgba(255,255,255,.14)" strokeWidth="0.8"/>
-    <circle cx="12" cy="12" r="5" fill="none" stroke="rgba(255,255,255,.14)" strokeWidth="0.8"/>
-    <circle cx="12" cy="12" r="3.4" fill={color} stroke="rgba(0,0,0,.3)" strokeWidth="0.8"/>
-    <circle cx="12" cy="12" r="0.9" fill="#23262e"/>
-  </svg>
-);
-
+/* All characters, objects and icons are pixel-art sprites, see pixel.jsx */
+const LEAF = ["...kk.", "..kglk", ".kgglk", "kgglk.", "kglk..", ".kk..."];
 /* ---------- themes ----------
    percussion item: { id, label, icon, sound }
    melodic item:    { id, label, icon, kind:'note'|'soft'|'chord', voice, note|notes } */
@@ -587,36 +382,32 @@ export default function RhythmRunners() {
       <style>{css}</style>
 
       <header className="rr-header">
-        <h1>{T.icon} Rhythm Runners <span className="rr-sub">{T.title}</span></h1>
+        <h1><span className="rr-h1-icon"><CharSprite id={WORLD_ICON[theme]} /></span>Rhythm Runners <span className="rr-sub">{T.title}</span></h1>
         <div className="rr-controls">
           <div className="rr-theme">
             {THEME_ORDER.map((id) => (
               <button key={id} className={theme === id ? "cur" : ""} onClick={() => switchTheme(id)} title={THEMES[id].title}>
-                {THEMES[id].icon}
+                <CharSprite id={WORLD_ICON[id]} />
               </button>
             ))}
           </div>
           <button className={`rr-play ${playing ? "on" : ""}`} onClick={togglePlay}>
-            {playing ? "❚❚" : "▶"}
+            <span className="rr-play-ic"><Icon name={playing ? "pause" : "play"} /></span>
           </button>
           <div className="rr-tempo">
-            {[{ t: 80, e: "🐌" }, { t: 104, e: "🐟" }, { t: 132, e: "🚀" }].map((o) => (
+            {[{ t: 80, e: "speed1" }, { t: 104, e: "speed2" }, { t: 132, e: "speed3" }].map((o) => (
               <button key={o.t} className={tempo === o.t ? "sel" : ""} onClick={() => setTempo(o.t)} title={`${o.t} bpm`}>
-                {o.e}
+                <span className="rr-ic"><Icon name={o.e} /></span>
               </button>
             ))}
           </div>
           <button className={`rr-tool ${eraser ? "sel" : ""}`} onClick={() => setEraser(!eraser)} title="Eraser">
-            🧽
+            <span className="rr-ic"><EraserIcon /></span>
           </button>
-          <button className="rr-tool" onClick={clearAll} title="Clear all">🗑️</button>
+          <button className="rr-tool" onClick={clearAll} title="Clear all"><span className="rr-ic"><TrashIcon /></span></button>
           {canFullscreen && (
             <button className="rr-tool rr-full" onClick={toggleFullscreen} title={isFull ? "Exit full screen" : "Full screen"}>
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                {isFull
-                  ? <path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" />
-                  : <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />}
-              </svg>
+              <span className="rr-ic"><Icon name={isFull ? "unfull" : "full"} /></span>
             </button>
           )}
         </div>
@@ -630,7 +421,7 @@ export default function RhythmRunners() {
           ))}
         {T.amb === "leaf" &&
           [...Array(9)].map((_, i) => (
-            <span key={`l${i}`} className="rr-leaf" style={{ left: `${(i * 13 + 3) % 100}%`, animationDelay: `${i * 2.1}s`, animationDuration: `${9 + (i % 4) * 2.5}s` }}>🍃</span>
+            <span key={`l${i}`} className="rr-leaf" style={{ left: `${(i * 13 + 3) % 100}%`, animationDelay: `${i * 2.1}s`, animationDuration: `${9 + (i % 4) * 2.5}s` }}><Sprite grid={LEAF} pal={{ g: "#7bd15c", l: "#c4f08a" }} canvas={6} /></span>
           ))}
         {T.amb === "star" &&
           [...Array(22)].map((_, i) => (
@@ -638,8 +429,8 @@ export default function RhythmRunners() {
               left: `${(i * 17 + 7) % 100}%`,
               top: `${(i * 23 + 5) % 92}%`,
               animationDelay: `${(i % 7) * 0.6}s`,
-              width: `${2 + (i % 3)}px`,
-              height: `${2 + (i % 3)}px`,
+              width: `${(1 + (i % 3 === 0)) * 3}px`,
+              height: `${(1 + (i % 3 === 0)) * 3}px`,
             }} />
           ))}
 
@@ -674,8 +465,8 @@ export default function RhythmRunners() {
               );
             })}
             <div className="rr-swimmer" ref={(el) => (fishRefs.current[lane.id] = el)}>
-              <span className={`rr-fish ${playing ? "swim" : ""}`} style={{ transform: lane.flip ? "scaleX(-1)" : "none", animationDelay: `${li * 0.3}s` }}>
-                {lane.emoji}
+              <span className={`rr-fish ${playing ? "swim" : ""}`} style={{ animationDelay: `${li * 0.15}s` }}>
+                <CharSprite id={lane.id} />
               </span>
             </div>
           </div>
@@ -686,7 +477,7 @@ export default function RhythmRunners() {
       <footer className="rr-palette">
         {T.lanes.map((lane) => (
           <div key={lane.id} className="rr-group" style={{ "--lc": lane.color }}>
-            <span className="rr-group-tag">{lane.emoji}</span>
+            <span className="rr-group-tag"><CharSprite id={lane.id} /></span>
             {T.items[lane.id].map((item) => {
               const isSel = !eraser && selected.lane === lane.id && selected.item === item.id;
               return (
@@ -713,95 +504,88 @@ export default function RhythmRunners() {
 
 /* ============================ styles ============================ */
 const css = `
-@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap');
+/* ================= PIXEL ART THEME ================= */
+@font-face{font-family:'Pixelify Sans';font-weight:400;font-display:swap;src:url('fonts/pixelify-sans-latin-400-normal.woff2') format('woff2');}
+@font-face{font-family:'Pixelify Sans';font-weight:700;font-display:swap;src:url('fonts/pixelify-sans-latin-700-normal.woff2') format('woff2');}
 
 .rr-root{
-  font-family:'Fredoka',sans-serif;
+  --ink:#1b1d2e;
+  font-family:'Pixelify Sans',monospace;
   height:100vh; height:100dvh; display:flex; flex-direction:column;
   padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   box-sizing:border-box;
   color:#eaf6ff; user-select:none; -webkit-user-select:none; overflow:hidden;
-  transition:background 1s;
 }
-.rr-root.aqua{background:linear-gradient(180deg,#062a52,#04203f);}
-.rr-root.jungle{background:linear-gradient(180deg,#123020,#0a1f14);}
-.rr-root.space{background:linear-gradient(180deg,#120b2e,#060314);}
-.rr-root.city{background:linear-gradient(180deg,#241a36,#12101f);}
+.rr-root.aqua{background:#062a52;}
+.rr-root.jungle{background:#0f2a1b;}
+.rr-root.space{background:#0b0720;}
+.rr-root.city{background:#1c1530;}
+.rr-root button{font-family:inherit;}
 
+/* ---------- header ---------- */
 .rr-header{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;gap:10px;flex-wrap:wrap;}
-.rr-header h1{margin:0;font-size:clamp(16px,2.6vw,24px);font-weight:700;letter-spacing:.5px;text-shadow:0 2px 8px rgba(0,0,0,.4);}
+.rr-header h1{margin:0;font-size:clamp(18px,2.8vw,28px);font-weight:700;letter-spacing:1px;
+  text-shadow:3px 3px 0 var(--ink);display:flex;align-items:center;gap:10px;}
+.rr-h1-icon{width:30px;height:30px;display:block;filter:drop-shadow(2px 2px 0 var(--ink));}
+.rr-sub{font-weight:400;opacity:.75;font-size:.7em;text-shadow:2px 2px 0 var(--ink);}
 .rr-controls{display:flex;align-items:center;gap:8px;}
-.rr-sub{font-weight:500;opacity:.7;font-size:.75em;margin-left:4px;}
-.rr-theme{
-  display:flex;gap:2px;border-radius:999px;padding:4px;
-  background:rgba(255,255,255,.1);
-}
-.rr-theme button{
-  width:36px;height:36px;display:grid;place-items:center;font-size:18px;border-radius:999px;
-  opacity:.45;transition:all .25s;border:none;background:transparent;cursor:pointer;
-}
-.rr-theme button.cur{opacity:1;background:rgba(255,255,255,.28);transform:scale(1.05);}
-.rr-play{
-  width:52px;height:52px;border-radius:50%;border:none;cursor:pointer;font-size:20px;
-  background:linear-gradient(180deg,#ffd166,#ff9f43);color:#4a2c00;
-  box-shadow:0 4px 0 #b96a12,0 6px 14px rgba(0,0,0,.4);transition:transform .1s;
-}
-.rr-play:active{transform:translateY(3px);box-shadow:0 1px 0 #b96a12;}
-.rr-play.on{background:linear-gradient(180deg,#7be38b,#3cb964);color:#053;box-shadow:0 4px 0 #1d7a3c,0 6px 14px rgba(0,0,0,.4);}
-.rr-tempo{display:flex;background:rgba(255,255,255,.1);border-radius:999px;padding:3px;gap:2px;}
-.rr-tempo button,.rr-tool{
-  border:none;background:transparent;font-size:19px;cursor:pointer;border-radius:999px;
-  width:40px;height:40px;display:grid;place-items:center;transition:background .15s;
-}
-.rr-tempo button.sel{background:rgba(255,255,255,.28);}
-.rr-tool{background:rgba(255,255,255,.1);}
-.rr-tool.sel{background:#ffd166;box-shadow:0 0 0 3px rgba(255,209,102,.4);}
+.rr-ic{width:20px;height:20px;display:block;}
 
-/* ---------- scene ---------- */
+/* chunky square buttons with hard pixel shadows */
+.rr-theme,.rr-tempo{
+  display:flex;gap:3px;padding:3px;background:rgba(0,0,0,.28);
+  border:3px solid var(--ink);box-shadow:0 3px 0 var(--ink);
+}
+.rr-theme button,.rr-tempo button{
+  width:38px;height:38px;display:grid;place-items:center;border:none;cursor:pointer;
+  background:transparent;opacity:.5;padding:6px;color:#eaf6ff;
+}
+.rr-theme button.cur,.rr-tempo button.sel{opacity:1;background:rgba(255,255,255,.22);box-shadow:inset 0 -3px 0 rgba(0,0,0,.25);}
+.rr-play{
+  width:52px;height:52px;border:3px solid var(--ink);cursor:pointer;display:grid;place-items:center;
+  background:#ffb020;color:#3a2200;box-shadow:inset -4px -4px 0 #d9851a,inset 4px 4px 0 #ffd76b,0 4px 0 var(--ink);
+}
+.rr-play:active{transform:translateY(3px);box-shadow:inset -4px -4px 0 #d9851a,inset 4px 4px 0 #ffd76b,0 1px 0 var(--ink);}
+.rr-play.on{background:#4fc46b;color:#0b3a1a;box-shadow:inset -4px -4px 0 #2f9a4a,inset 4px 4px 0 #8fe8a2,0 4px 0 var(--ink);}
+.rr-play-ic{width:22px;height:22px;display:block;}
+.rr-tool{
+  width:44px;height:44px;border:3px solid var(--ink);cursor:pointer;display:grid;place-items:center;
+  background:#3a4570;color:#eaf6ff;box-shadow:inset -3px -3px 0 #28304f,inset 3px 3px 0 #5a68a0,0 3px 0 var(--ink);
+}
+.rr-tool:active{transform:translateY(2px);}
+.rr-tool.sel{background:#ffd166;box-shadow:inset -3px -3px 0 #d9a53a,inset 3px 3px 0 #ffe9a8,0 3px 0 var(--ink);}
+
+/* ---------- scene: banded skies (hard colour steps, no smooth gradients) ---------- */
 .rr-scene{
-  min-height:0;
-  flex:1;position:relative;margin:0 10px;border-radius:18px;overflow:hidden;
-  box-shadow:inset 0 0 60px rgba(0,20,50,.45),0 10px 30px rgba(0,0,0,.35);
-  display:flex;flex-direction:column;transition:background 1s;
+  flex:1;min-height:0;position:relative;margin:0 10px;overflow:hidden;
+  border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink);
+  display:flex;flex-direction:column;
 }
-.rr-scene.aqua{background:linear-gradient(180deg,#39c1e8 0%,#1b8ec9 34%,#0f5f9e 68%,#0a3d70 100%);}
-.rr-scene.jungle{background:linear-gradient(180deg,#a8d97c 0%,#5aa354 30%,#2f7a44 66%,#1b4d30 100%);}
-.rr-scene.space{background:linear-gradient(180deg,#3b2a7a 0%,#241a56 32%,#161038 66%,#0b0722 100%);}
-.rr-scene.city{background:linear-gradient(180deg,#ff9e6b 0%,#c96a8a 26%,#6a4a8c 55%,#2b2350 100%);}
-.rr-rays{
-  position:absolute;inset:-20% -10%;pointer-events:none;opacity:.5;
-  background:
-    linear-gradient(115deg,transparent 20%,rgba(255,255,255,.14) 24%,transparent 30%),
-    linear-gradient(115deg,transparent 46%,rgba(255,255,255,.1) 50%,transparent 57%),
-    linear-gradient(115deg,transparent 70%,rgba(255,255,255,.12) 75%,transparent 82%);
-  animation:rays 9s ease-in-out infinite alternate;
-}
-.rr-scene.space .rr-rays{opacity:.12;}
-@keyframes rays{from{transform:translateX(-2%)}to{transform:translateX(2%)}}
+.rr-scene.aqua{background:linear-gradient(180deg,#46c8ec 0 16%,#33b2e0 16% 32%,#2398cd 32% 48%,#1a80b8 48% 64%,#1468a1 64% 80%,#0f5088 80%);}
+.rr-scene.jungle{background:linear-gradient(180deg,#b4e07e 0 16%,#93cc6a 16% 32%,#6fb558 32% 48%,#529c4b 48% 64%,#3c8442 64% 80%,#2a6a37 80%);}
+.rr-scene.space{background:linear-gradient(180deg,#43308a 0 16%,#382878 16% 32%,#2d2066 32% 48%,#231953 48% 64%,#1a1240 64% 80%,#110b2e 80%);}
+.rr-scene.city{background:linear-gradient(180deg,#ffa86e 0 16%,#f48a6c 16% 32%,#d46f82 32% 48%,#a65c8c 48% 64%,#744d8e 64% 80%,#46396e 80%);}
+.rr-rays{display:none;}
+
+/* ambience: everything snaps to whole pixels */
 .rr-amb{
-  position:absolute;bottom:-14px;width:9px;height:9px;border-radius:50%;
-  background:rgba(255,255,255,.35);border:1px solid rgba(255,255,255,.5);
+  position:absolute;bottom:-14px;width:6px;height:6px;
+  background:rgba(220,245,255,.55);box-shadow:0 0 0 2px rgba(255,255,255,.5);
   animation:rise linear infinite;pointer-events:none;
 }
-@keyframes rise{from{transform:translateY(0);opacity:.7}to{transform:translateY(-108vh);opacity:0}}
-.rr-leaf{
-  position:absolute;top:-30px;font-size:15px;pointer-events:none;
-  animation:fall linear infinite;opacity:.8;
-}
+@keyframes rise{from{transform:translateY(0)}to{transform:translateY(-110vh)}}
+.rr-leaf{position:absolute;top:-30px;width:18px;height:18px;pointer-events:none;animation:fall linear infinite;}
 @keyframes fall{
-  0%{transform:translateY(0) translateX(0) rotate(0);opacity:.85}
-  50%{transform:translateY(54vh) translateX(26px) rotate(160deg)}
-  100%{transform:translateY(108vh) translateX(-14px) rotate(320deg);opacity:.2}
+  0%{transform:translate(0,0) rotate(0)}
+  25%{transform:translate(18px,27vh) rotate(90deg)}
+  50%{transform:translate(0,54vh) rotate(180deg)}
+  75%{transform:translate(-18px,81vh) rotate(270deg)}
+  100%{transform:translate(0,110vh) rotate(360deg)}
 }
-.rr-star{
-  position:absolute;border-radius:50%;background:#fff;pointer-events:none;
-  box-shadow:0 0 6px 1px rgba(255,255,255,.7);
-  animation:twinkle 2.8s ease-in-out infinite;
-}
-@keyframes twinkle{0%,100%{opacity:.25;transform:scale(.8)}50%{opacity:1;transform:scale(1.25)}}
-.rr-scene.city .rr-rays{opacity:.18;}
+.rr-star{position:absolute;background:#fff;pointer-events:none;animation:twinkle 2.4s steps(1,end) infinite;}
+@keyframes twinkle{0%,100%{opacity:.35}50%{opacity:1}}
 .rr-skyline{
-  position:absolute;left:0;right:0;bottom:0;top:0;pointer-events:none;opacity:.4;
+  position:absolute;inset:0;pointer-events:none;opacity:.45;
   background-image:
     repeating-linear-gradient(90deg,#1a1430 0 48px,transparent 48px 82px),
     repeating-linear-gradient(90deg,#251c42 0 30px,transparent 30px 57px);
@@ -809,103 +593,94 @@ const css = `
   background-position:bottom left 12px,bottom left 40px;
   background-repeat:no-repeat;
 }
-.rr-window{
-  position:absolute;width:5px;height:6px;border-radius:1px;pointer-events:none;
-  background:#ffd980;box-shadow:0 0 7px 1px rgba(255,200,90,.55);
-  animation:twinkle 3.4s ease-in-out infinite;
-}
-.rr-ground{
-  position:absolute;left:0;right:0;bottom:0;height:16px;pointer-events:none;
-  opacity:.85;border-radius:50% 50% 0 0/100% 100% 0 0;
-}
-.rr-ground.aqua{background:radial-gradient(60% 140% at 50% 100%,#e8cf8f,#caa45f);}
-.rr-ground.jungle{background:radial-gradient(60% 140% at 50% 100%,#6d8430,#3f5220);}
-.rr-ground.space{background:radial-gradient(60% 140% at 50% 100%,#b8bfce,#6a7285);opacity:.6;}
+.rr-window{position:absolute;width:6px;height:6px;pointer-events:none;background:#ffd980;animation:twinkle 3.4s steps(1,end) infinite;}
+
+.rr-ground{position:absolute;left:0;right:0;bottom:0;height:12px;pointer-events:none;}
+.rr-ground.aqua{background:linear-gradient(180deg,#c9a45e 0 4px,#e8cf8f 4px);}
+.rr-ground.jungle{background:linear-gradient(180deg,#3f5a20 0 4px,#6d8430 4px);}
+.rr-ground.space{background:linear-gradient(180deg,#6a7285 0 4px,#9aa3b2 4px);}
 .rr-ground.city{
   background:
-    repeating-linear-gradient(90deg,transparent 0 26px,#ffd166 26px 44px,transparent 44px 70px) top/100% 2.4px no-repeat,
-    linear-gradient(180deg,#4a4f5c,#33373f);
-  border-radius:0;opacity:.9;
+    repeating-linear-gradient(90deg,transparent 0 24px,#ffd166 24px 42px,transparent 42px 66px) 0 6px/100% 3px no-repeat,
+    linear-gradient(180deg,#2b2e38 0 4px,#4a4f5c 4px);
 }
 
 /* ---------- lanes & cells ---------- */
-.rr-lane{flex:1;position:relative;display:flex;border-bottom:2px dashed rgba(255,255,255,.14);}
+.rr-lane{flex:1;position:relative;display:flex;border-bottom:3px dashed rgba(255,255,255,.16);}
 .rr-lane:last-child{border-bottom:none;}
-.rr-lane-tint{position:absolute;inset:0;opacity:0;transition:opacity .25s;pointer-events:none;}
-.rr-lane.hot .rr-lane-tint{opacity:.1;}
-.rr-cell{
-  flex:1;border:none;background:transparent;cursor:pointer;position:relative;padding:0;
-}
-.rr-cell.beat{border-left:1px solid rgba(255,255,255,.1);}
-.rr-cell.now{background:rgba(255,255,255,.09);}
+.rr-lane-tint{position:absolute;inset:0;opacity:0;pointer-events:none;}
+.rr-lane.hot .rr-lane-tint{opacity:.12;}
+.rr-cell{flex:1;border:none;background:transparent;cursor:pointer;position:relative;padding:0;}
+.rr-cell.beat{border-left:3px solid rgba(255,255,255,.08);}
+.rr-cell.now{background:rgba(255,255,255,.12);}
 .rr-obj{
   position:absolute;left:50%;top:50%;translate:-50% -50%;
   width:clamp(24px,84%,46px);aspect-ratio:1;max-height:86%;display:block;pointer-events:none;
-  filter:drop-shadow(0 3px 4px rgba(0,0,0,.35));
+  filter:drop-shadow(2px 2px 0 rgba(0,0,0,.35));
 }
-.rr-obj.shake{animation:wob .38s ease;}
+.rr-obj.shake{animation:wob .36s steps(1,end);}
 @keyframes wob{
-  0%{transform:rotate(0) scale(1)}
-  25%{transform:rotate(-14deg) scale(1.28)}
-  55%{transform:rotate(11deg) scale(1.18)}
-  100%{transform:rotate(0) scale(1)}
+  0%{transform:none}
+  20%{transform:translate(-2px,-4px) scale(1.25)}
+  45%{transform:translate(2px,-2px) scale(1.15)}
+  70%{transform:translate(-1px,0) scale(1.06)}
+  100%{transform:none}
 }
 
-/* ---------- swimmers ---------- */
-.rr-swimmer{
-  position:absolute;top:50%;left:0;width:0;height:0;pointer-events:none;z-index:3;
-}
+/* ---------- characters ---------- */
+.rr-swimmer{position:absolute;top:50%;left:0;width:0;height:0;pointer-events:none;z-index:3;}
 .rr-fish{
-  position:absolute;transform:translate(-50%,-50%);left:0;top:0;
-  font-size:clamp(26px,4.6vh,42px);display:block;margin-left:-0.6em;margin-top:-0.55em;
-  filter:drop-shadow(0 4px 6px rgba(0,0,0,.4));
+  --cs:clamp(34px,13vh,64px);
+  position:absolute;left:0;top:0;width:var(--cs);height:var(--cs);display:block;
+  margin-left:calc(var(--cs) * -0.75);margin-top:calc(var(--cs) * -0.5);
+  filter:drop-shadow(2px 2px 0 rgba(0,0,0,.4));
 }
-.rr-fish.swim{animation:bob .55s ease-in-out infinite alternate;}
-@keyframes bob{from{translate:0 -3px}to{translate:0 3px}}
+.rr-fish.swim{animation:bob .44s steps(1,end) infinite;}
+@keyframes bob{0%{transform:translateY(-2px)}50%{transform:translateY(2px)}}
 
 /* ---------- palette ---------- */
-.rr-palette{
-  display:flex;gap:8px;padding:8px 10px 10px;overflow-x:auto;align-items:stretch;
-}
+.rr-palette{display:flex;gap:8px;padding:10px 10px 10px;overflow-x:auto;align-items:stretch;}
 .rr-group{
-  display:flex;align-items:center;gap:5px;padding:5px 8px;border-radius:14px;
-  background:rgba(255,255,255,.07);border:2px solid color-mix(in srgb,var(--lc) 55%,transparent);
-  flex-shrink:0;
+  display:flex;align-items:center;gap:5px;padding:5px 8px;flex-shrink:0;
+  background:rgba(0,0,0,.25);border:3px solid var(--lc);box-shadow:0 3px 0 var(--ink);
 }
-.rr-group-tag{font-size:20px;margin-right:2px;}
+.rr-group-tag{width:26px;height:26px;display:block;margin-right:2px;}
 .rr-pal{
-  border:none;cursor:pointer;border-radius:12px;padding:5px 6px 3px;
-  background:rgba(255,255,255,.1);display:flex;flex-direction:column;align-items:center;gap:1px;
-  transition:transform .12s,background .12s;min-width:50px;
+  border:2px solid rgba(255,255,255,.18);cursor:pointer;padding:4px 6px 2px;min-width:50px;
+  background:rgba(255,255,255,.08);display:flex;flex-direction:column;align-items:center;gap:2px;
 }
-.rr-pal:hover{background:rgba(255,255,255,.2);}
-.rr-pal.sel{background:var(--lc);transform:scale(1.08);box-shadow:0 0 0 3px rgba(255,255,255,.55),0 4px 10px rgba(0,0,0,.35);}
-.rr-pal.sel .rr-pal-lb{color:#08283f;font-weight:700;}
+.rr-pal:hover{background:rgba(255,255,255,.18);}
+.rr-pal.sel{background:var(--lc);border-color:#fff;transform:translateY(-3px);box-shadow:0 3px 0 var(--ink);}
+.rr-pal.sel .rr-pal-lb{color:var(--ink);font-weight:700;}
 .rr-pal-ic{width:30px;height:30px;display:block;}
+.rr-pal-lb{font-size:12px;color:#dff2ff;}
 .rr-full{color:#eaf6ff;}
 
 /* ---------- short screens: phones in landscape ---------- */
 @media (max-height:520px){
   .rr-header{padding:4px 10px;gap:6px;flex-wrap:nowrap;}
-  .rr-header h1{font-size:16px;white-space:nowrap;}
+  .rr-header h1{font-size:17px;white-space:nowrap;gap:6px;}
+  .rr-h1-icon{width:22px;height:22px;}
   .rr-sub{display:none;}
   .rr-controls{gap:5px;}
-  .rr-play{width:38px;height:38px;font-size:15px;}
-  .rr-theme button{width:30px;height:30px;font-size:15px;}
-  .rr-tempo button,.rr-tool{width:32px;height:32px;font-size:15px;}
-  .rr-scene{margin:0 6px;border-radius:12px;}
-  .rr-palette{padding:5px 6px 6px;gap:6px;}
-  .rr-group{padding:3px 6px;gap:3px;}
-  .rr-pal{min-width:40px;padding:3px 4px 2px;}
+  .rr-play{width:38px;height:38px;}
+  .rr-play-ic{width:16px;height:16px;}
+  .rr-theme button,.rr-tempo button{width:30px;height:30px;padding:5px;}
+  .rr-tool{width:34px;height:34px;}
+  .rr-ic{width:16px;height:16px;}
+  .rr-scene{margin:0 6px;}
+  .rr-palette{padding:6px 6px 6px;gap:6px;}
+  .rr-group{padding:3px 5px;gap:3px;}
+  .rr-group-tag{width:20px;height:20px;}
+  .rr-pal{min-width:40px;padding:3px 4px 1px;}
   .rr-pal-ic{width:22px;height:22px;}
   .rr-pal-lb{font-size:10px;}
 }
 /* ---------- narrow screens: phones in portrait ---------- */
 @media (max-width:600px){
   .rr-header{justify-content:center;}
-  .rr-header h1{width:100%;text-align:center;}
+  .rr-header h1{width:100%;justify-content:center;}
   .rr-controls{flex-wrap:wrap;justify-content:center;}
-  .rr-fish{font-size:24px;}
+  .rr-fish{--cs:36px;}
 }
-.rr-pal-lb{font-size:11px;color:#dff2ff;font-weight:500;}
 `;
