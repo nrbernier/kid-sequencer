@@ -26,6 +26,23 @@ const THEME_ORDER = ["aqua", "jungle", "space", "city"];
 
 /* All characters, objects and icons are pixel-art sprites, see pixel.jsx */
 const LEAF = ["...kk.", "..kglk", ".kgglk", "kgglk.", "kglk..", ".kk..."];
+const COMET = [
+  "..........tt",
+  "........tttt",
+  "......ttttt.",
+  "..kkk.ttt...",
+  ".kmlmkt.....",
+  "kmllmmk.....",
+  "kmlmmmk.....",
+  ".kmmdk......",
+  "..kkk.......",
+];
+/* a fixed, irregular starfield: most stars still, some twinkle, a few sparkle */
+const STARS = Array.from({ length: 34 }, (_, i) => {
+  const r = (n) => ((Math.sin(i * 97.13 + n * 13.7) + 1) / 2); // deterministic pseudo-random
+  const kind = i % 6 === 0 ? "big" : i % 3 === 0 ? "tw" : r(3) > 0.5 ? "dim" : "";
+  return { x: r(1) * 98, y: r(2) * 90, kind, dur: (2.2 + r(4) * 2.6).toFixed(2), delay: (r(5) * 4).toFixed(2) };
+});
 /* ---------- themes ----------
    percussion item: { id, label, icon, sound }
    melodic item:    { id, label, icon, kind:'note'|'soft'|'chord', voice, note|notes } */
@@ -36,10 +53,10 @@ export const THEMES = {
     sceneClass: "aqua",
     amb: "bubble",
     lanes: [
-      { id: "crab",   emoji: "🦀", color: "#ff7a6b", flip: false },
-      { id: "puffer", emoji: "🐡", color: "#ffd166", flip: true  },
-      { id: "fish",   emoji: "🐠", color: "#5be3d6", flip: true  },
-      { id: "turtle", emoji: "🐢", color: "#9ef0a8", flip: true  },
+      { id: "crab",   emoji: "🦀", color: "#d9735f", flip: false },
+      { id: "puffer", emoji: "🐡", color: "#e8c46a", flip: true  },
+      { id: "fish",   emoji: "🐠", color: "#6fc0c8", flip: true  },
+      { id: "turtle", emoji: "🐢", color: "#8ccf9e", flip: true  },
     ],
     items: {
       crab: [
@@ -51,18 +68,18 @@ export const THEMES = {
         { id: "urchin", label: "Shh",  icon: <Urchin />, sound: "wash" },
       ],
       fish: [
-        { id: "sh-c", label: "Do",  icon: <Shell color="#ff8fa3" />, kind: "note", voice: "deepPluck", note: "C4" },
-        { id: "sh-d", label: "Re",  icon: <Shell color="#ffc36b" />, kind: "note", voice: "deepPluck", note: "D4" },
-        { id: "sh-e", label: "Mi",  icon: <Shell color="#ffe86b" />, kind: "note", voice: "deepPluck", note: "E4" },
-        { id: "sh-g", label: "Sol", icon: <Shell color="#7be38b" />, kind: "note", voice: "deepPluck", note: "G4" },
-        { id: "sh-a", label: "La",  icon: <Shell color="#7bc8ff" />, kind: "note", voice: "deepPluck", note: "A4" },
+        { id: "sh-c", label: "Do",  icon: <Shell color="#d97a7a" />, kind: "note", voice: "deepPluck", note: "C4" },
+        { id: "sh-d", label: "Re",  icon: <Shell color="#dda06a" />, kind: "note", voice: "deepPluck", note: "D4" },
+        { id: "sh-e", label: "Mi",  icon: <Shell color="#d8c674" />, kind: "note", voice: "deepPluck", note: "E4" },
+        { id: "sh-g", label: "Sol", icon: <Shell color="#86c29a" />, kind: "note", voice: "deepPluck", note: "G4" },
+        { id: "sh-a", label: "La",  icon: <Shell color="#7aaed0" />, kind: "note", voice: "deepPluck", note: "A4" },
       ],
       turtle: [
-        { id: "sh-c5", label: "Do",   icon: <Shell color="#d9a7ff" />, kind: "soft", voice: "pad", note: "C5" },
-        { id: "sh-g5", label: "Sol",  icon: <Shell color="#a7c4ff" />, kind: "soft", voice: "pad", note: "G4" },
-        { id: "st-c",  label: "Do M", icon: <Starfish color="#ffcf5c" />, kind: "chord", voice: "pad", notes: ["C3","G3","E4","C5"] },
-        { id: "st-am", label: "La m", icon: <Starfish color="#ff9fb6" />, kind: "chord", voice: "pad", notes: ["A2","E3","C4","A4"] },
-        { id: "st-f",  label: "Fa M", icon: <Starfish color="#8fd7ff" />, kind: "chord", voice: "pad", notes: ["F2","C3","A3","F4"] },
+        { id: "sh-c5", label: "Do",   icon: <Shell color="#d97a7a" />, kind: "soft", voice: "pad", note: "C5" },
+        { id: "sh-g5", label: "Sol",  icon: <Shell color="#86c29a" />, kind: "soft", voice: "pad", note: "G4" },
+        { id: "st-c",  label: "Do M", icon: <Starfish color="#d97a7a" />, kind: "chord", voice: "pad", notes: ["C3","G3","E4","C5"] },
+        { id: "st-am", label: "La m", icon: <Starfish color="#7aaed0" />, kind: "chord", voice: "pad", notes: ["A2","E3","C4","A4"] },
+        { id: "st-f",  label: "Fa M", icon: <Starfish color="#a98ac8" />, kind: "chord", voice: "pad", notes: ["F2","C3","A3","F4"] },
       ],
     },
     start: () => {
@@ -82,10 +99,10 @@ export const THEMES = {
     sceneClass: "jungle",
     amb: "leaf",
     lanes: [
-      { id: "gorilla", emoji: "🦍", color: "#c9915e", flip: true },
-      { id: "parrot",  emoji: "🦜", color: "#ff5d8f", flip: true },
-      { id: "monkey",  emoji: "🐒", color: "#ffc94d", flip: true },
-      { id: "sloth",   emoji: "🦥", color: "#8bd3dd", flip: true },
+      { id: "gorilla", emoji: "🦍", color: "#c98a4b", flip: true },
+      { id: "parrot",  emoji: "🦜", color: "#ff2a5d", flip: true },
+      { id: "monkey",  emoji: "🐒", color: "#ffc400", flip: true },
+      { id: "sloth",   emoji: "🦥", color: "#4fd1e0", flip: true },
     ],
     items: {
       gorilla: [
@@ -97,18 +114,18 @@ export const THEMES = {
         { id: "pod",  label: "Chh", icon: <SeedPod />, sound: "shakerpod" },
       ],
       monkey: [
-        { id: "fr-c", label: "Do",  icon: <Fruit color="#ff6b6b" />, kind: "note", voice: "marimba", note: "C4" },
-        { id: "fr-d", label: "Re",  icon: <Fruit color="#ff9f43" />, kind: "note", voice: "marimba", note: "D4" },
-        { id: "fr-e", label: "Mi",  icon: <Fruit color="#fdd54f" />, kind: "note", voice: "marimba", note: "E4" },
-        { id: "fr-g", label: "Sol", icon: <Fruit color="#7bd15c" />, kind: "note", voice: "marimba", note: "G4" },
-        { id: "fr-a", label: "La",  icon: <Fruit color="#b58cff" />, kind: "note", voice: "marimba", note: "A4" },
+        { id: "fr-c", label: "Do",  icon: <Fruit color="#ff3b30" />, kind: "note", voice: "marimba", note: "C4" },
+        { id: "fr-d", label: "Re",  icon: <Fruit color="#ff8c00" />, kind: "note", voice: "marimba", note: "D4" },
+        { id: "fr-e", label: "Mi",  icon: <Fruit color="#ffd400" />, kind: "note", voice: "marimba", note: "E4" },
+        { id: "fr-g", label: "Sol", icon: <Fruit color="#4cd419" />, kind: "note", voice: "marimba", note: "G4" },
+        { id: "fr-a", label: "La",  icon: <Fruit color="#1e90ff" />, kind: "note", voice: "marimba", note: "A4" },
       ],
       sloth: [
-        { id: "ka-c", label: "Do",   icon: <Fruit color="#ff8fc0" />, kind: "soft", voice: "kalimba", note: "C5" },
-        { id: "ka-g", label: "Sol",  icon: <Fruit color="#8fd7ff" />, kind: "soft", voice: "kalimba", note: "G5" },
-        { id: "fl-c",  label: "Do M", icon: <Flower color="#ff7096" />, kind: "chord", voice: "kalimba", notes: ["C4","E4","G4","C5"] },
-        { id: "fl-am", label: "La m", icon: <Flower color="#b48cf2" />, kind: "chord", voice: "kalimba", notes: ["A3","C4","E4","A4"] },
-        { id: "fl-f",  label: "Fa M", icon: <Flower color="#5cc9e8" />, kind: "chord", voice: "kalimba", notes: ["F3","A3","C4","F4"] },
+        { id: "ka-c", label: "Do",   icon: <Fruit color="#ff3b30" />, kind: "soft", voice: "kalimba", note: "C5" },
+        { id: "ka-g", label: "Sol",  icon: <Fruit color="#4cd419" />, kind: "soft", voice: "kalimba", note: "G5" },
+        { id: "fl-c",  label: "Do M", icon: <Flower color="#ff3b30" />, kind: "chord", voice: "kalimba", notes: ["C4","E4","G4","C5"] },
+        { id: "fl-am", label: "La m", icon: <Flower color="#1e90ff" />, kind: "chord", voice: "kalimba", notes: ["A3","C4","E4","A4"] },
+        { id: "fl-f",  label: "Fa M", icon: <Flower color="#a64dff" />, kind: "chord", voice: "kalimba", notes: ["F3","A3","C4","F4"] },
       ],
     },
     start: () => {
@@ -128,10 +145,10 @@ export const THEMES = {
     sceneClass: "space",
     amb: "star",
     lanes: [
-      { id: "rocket", emoji: "🚀", color: "#ff6b8a", flip: false },
-      { id: "alien",  emoji: "👽", color: "#7bff9e", flip: false },
-      { id: "ufo",    emoji: "🛸", color: "#7bc8ff", flip: false },
-      { id: "robot",  emoji: "🤖", color: "#ffd166", flip: false },
+      { id: "rocket", emoji: "🚀", color: "#ff2e88", flip: false },
+      { id: "alien",  emoji: "👽", color: "#5dff6e", flip: false },
+      { id: "ufo",    emoji: "🛸", color: "#29d9ff", flip: false },
+      { id: "robot",  emoji: "🤖", color: "#fff05a", flip: false },
     ],
     items: {
       rocket: [
@@ -143,18 +160,18 @@ export const THEMES = {
         { id: "spark", label: "Tick",  icon: <Sparkle />, sound: "tick8" },
       ],
       ufo: [
-        { id: "pl-c", label: "Do",  icon: <Planet color="#ff6b6b" />, kind: "note", voice: "chip", note: "C5" },
-        { id: "pl-d", label: "Re",  icon: <Planet color="#ff9f43" />, kind: "note", voice: "chip", note: "D5" },
-        { id: "pl-e", label: "Mi",  icon: <Planet color="#ffe14d" />, kind: "note", voice: "chip", note: "E5" },
-        { id: "pl-g", label: "Sol", icon: <Planet color="#7bd15c" />, kind: "note", voice: "chip", note: "G5" },
-        { id: "pl-a", label: "La",  icon: <Planet color="#b58cff" />, kind: "note", voice: "chip", note: "A5" },
+        { id: "pl-c", label: "Do",  icon: <Planet color="#ff3d6e" />, kind: "note", voice: "chip", note: "C5" },
+        { id: "pl-d", label: "Re",  icon: <Planet color="#ff9a1f" />, kind: "note", voice: "chip", note: "D5" },
+        { id: "pl-e", label: "Mi",  icon: <Planet color="#f7f240" />, kind: "note", voice: "chip", note: "E5" },
+        { id: "pl-g", label: "Sol", icon: <Planet color="#45ff7a" />, kind: "note", voice: "chip", note: "G5" },
+        { id: "pl-a", label: "La",  icon: <Planet color="#3dd2ff" />, kind: "note", voice: "chip", note: "A5" },
       ],
       robot: [
-        { id: "st-c6", label: "Do",   icon: <StarIcon color="#ffe98a" />, kind: "soft", voice: "pulse", note: "C6" },
-        { id: "st-g5", label: "Sol",  icon: <StarIcon color="#a7c4ff" />, kind: "soft", voice: "pulse", note: "G5" },
-        { id: "cm-c",  label: "Do M", icon: <Comet color="#ffb35c" />, kind: "chord", voice: "pulse", notes: ["C4","G4","E5","C6"] },
-        { id: "cm-am", label: "La m", icon: <Comet color="#ff8fb0" />, kind: "chord", voice: "pulse", notes: ["A3","E4","C5","A5"] },
-        { id: "cm-f",  label: "Fa M", icon: <Comet color="#7cd4ff" />, kind: "chord", voice: "pulse", notes: ["F3","C4","A4","F5"] },
+        { id: "st-c6", label: "Do",   icon: <StarIcon color="#ff3d6e" />, kind: "soft", voice: "pulse", note: "C6" },
+        { id: "st-g5", label: "Sol",  icon: <StarIcon color="#45ff7a" />, kind: "soft", voice: "pulse", note: "G5" },
+        { id: "cm-c",  label: "Do M", icon: <Comet color="#ff3d6e" />, kind: "chord", voice: "pulse", notes: ["C4","G4","E5","C6"] },
+        { id: "cm-am", label: "La m", icon: <Comet color="#3dd2ff" />, kind: "chord", voice: "pulse", notes: ["A3","E4","C5","A5"] },
+        { id: "cm-f",  label: "Fa M", icon: <Comet color="#c45cff" />, kind: "chord", voice: "pulse", notes: ["F3","C4","A4","F5"] },
       ],
     },
     start: () => {
@@ -176,10 +193,10 @@ export const THEMES = {
     sceneClass: "city",
     amb: "window",
     lanes: [
-      { id: "worker",  emoji: "👷", color: "#ffb020", flip: true },
-      { id: "runner",  emoji: "🏃", color: "#ff5d7a", flip: true },
-      { id: "cyclist", emoji: "🚴", color: "#5bd0ff", flip: true },
-      { id: "dancer",  emoji: "🕺", color: "#c58bff", flip: false },
+      { id: "worker",  emoji: "👷", color: "#f2a530", flip: true },
+      { id: "runner",  emoji: "🏃", color: "#e0587a", flip: true },
+      { id: "cyclist", emoji: "🚴", color: "#4fa3e0", flip: true },
+      { id: "dancer",  emoji: "🕺", color: "#a77be6", flip: false },
     ],
     items: {
       worker: [
@@ -191,18 +208,18 @@ export const THEMES = {
         { id: "hydrant", label: "Pssh",  icon: <Hydrant />, sound: "hiss" },
       ],
       cyclist: [
-        { id: "sg-c", label: "Do",  icon: <Sign color="#ff6b6b" />, kind: "note", voice: "bell", note: "C5" },
-        { id: "sg-d", label: "Re",  icon: <Sign color="#ff9f43" />, kind: "note", voice: "bell", note: "D5" },
-        { id: "sg-e", label: "Mi",  icon: <Sign color="#ffe14d" />, kind: "note", voice: "bell", note: "E5" },
-        { id: "sg-g", label: "Sol", icon: <Sign color="#7bd15c" />, kind: "note", voice: "bell", note: "G5" },
-        { id: "sg-a", label: "La",  icon: <Sign color="#b58cff" />, kind: "note", voice: "bell", note: "A5" },
+        { id: "sg-c", label: "Do",  icon: <Sign color="#e0635a" />, kind: "note", voice: "bell", note: "C5" },
+        { id: "sg-d", label: "Re",  icon: <Sign color="#e8954a" />, kind: "note", voice: "bell", note: "D5" },
+        { id: "sg-e", label: "Mi",  icon: <Sign color="#e8c95a" />, kind: "note", voice: "bell", note: "E5" },
+        { id: "sg-g", label: "Sol", icon: <Sign color="#6fb07a" />, kind: "note", voice: "bell", note: "G5" },
+        { id: "sg-a", label: "La",  icon: <Sign color="#5a8fc8" />, kind: "note", voice: "bell", note: "A5" },
       ],
       dancer: [
-        { id: "vn-c", label: "Do",   icon: <Vinyl color="#ff8fc0" />, kind: "soft", voice: "keys", note: "C4" },
-        { id: "vn-g", label: "Sol",  icon: <Vinyl color="#8fd7ff" />, kind: "soft", voice: "keys", note: "G4" },
-        { id: "bb-c",  label: "Do M", icon: <Boombox color="#ff7096" />, kind: "chord", voice: "keys", notes: ["C3","G3","E4","C5"] },
-        { id: "bb-am", label: "La m", icon: <Boombox color="#b48cf2" />, kind: "chord", voice: "keys", notes: ["A2","E3","C4","A4"] },
-        { id: "bb-f",  label: "Fa M", icon: <Boombox color="#5cc9e8" />, kind: "chord", voice: "keys", notes: ["F2","C3","A3","F4"] },
+        { id: "vn-c", label: "Do",   icon: <Vinyl color="#e0635a" />, kind: "soft", voice: "keys", note: "C4" },
+        { id: "vn-g", label: "Sol",  icon: <Vinyl color="#6fb07a" />, kind: "soft", voice: "keys", note: "G4" },
+        { id: "bb-c",  label: "Do M", icon: <Boombox color="#e0635a" />, kind: "chord", voice: "keys", notes: ["C3","G3","E4","C5"] },
+        { id: "bb-am", label: "La m", icon: <Boombox color="#5a8fc8" />, kind: "chord", voice: "keys", notes: ["A2","E3","C4","A4"] },
+        { id: "bb-f",  label: "Fa M", icon: <Boombox color="#9a7ac0" />, kind: "chord", voice: "keys", notes: ["F2","C3","A3","F4"] },
       ],
     },
     start: () => {
@@ -423,16 +440,17 @@ export default function RhythmRunners() {
           [...Array(9)].map((_, i) => (
             <span key={`l${i}`} className="rr-leaf" style={{ left: `${(i * 13 + 3) % 100}%`, animationDelay: `${i * 2.1}s`, animationDuration: `${9 + (i % 4) * 2.5}s` }}><Sprite grid={LEAF} pal={{ g: "#7bd15c", l: "#c4f08a" }} canvas={6} /></span>
           ))}
-        {T.amb === "star" &&
-          [...Array(22)].map((_, i) => (
-            <span key={`s${i}`} className="rr-star" style={{
-              left: `${(i * 17 + 7) % 100}%`,
-              top: `${(i * 23 + 5) % 92}%`,
-              animationDelay: `${(i % 7) * 0.6}s`,
-              width: `${(1 + (i % 3 === 0)) * 3}px`,
-              height: `${(1 + (i % 3 === 0)) * 3}px`,
-            }} />
-          ))}
+        {T.amb === "star" && (
+          <>
+            {STARS.map((st, i) => (
+              <span key={`s${i}`} className={`rr-star ${st.kind}`} style={{
+                left: `${st.x}%`, top: `${st.y}%`,
+                "--d": `${st.dur}s`, animationDelay: `${st.delay}s`,
+              }} />
+            ))}
+            <span className="rr-comet"><Sprite grid={COMET} pal={{ m: "#ffffff", l: "#ffffff", d: "#bfefff", t: "#7fe9ff", k: "#29d9ff" }} /></span>
+          </>
+        )}
 
         {T.amb === "window" && (
           <>
@@ -516,10 +534,11 @@ const css = `
   box-sizing:border-box;
   color:#eaf6ff; user-select:none; -webkit-user-select:none; overflow:hidden;
 }
-.rr-root.aqua{background:#062a52;}
-.rr-root.jungle{background:#0f2a1b;}
-.rr-root.space{background:#0b0720;}
-.rr-root.city{background:#1c1530;}
+/* each world: its own outline ink, frame colour and tone */
+.rr-root.aqua{--ink:#0d2a3a;background:#0e2633;}
+.rr-root.jungle{--ink:#1d2b10;background:#13260f;}
+.rr-root.space{--ink:#0c0820;background:#05020f;}
+.rr-root.city{--ink:#2b1e2a;background:#1d1828;}
 .rr-root button{font-family:inherit;}
 
 /* ---------- header ---------- */
@@ -561,16 +580,20 @@ const css = `
   border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink);
   display:flex;flex-direction:column;
 }
-.rr-scene.aqua{background:linear-gradient(180deg,#46c8ec 0 16%,#33b2e0 16% 32%,#2398cd 32% 48%,#1a80b8 48% 64%,#1468a1 64% 80%,#0f5088 80%);}
-.rr-scene.jungle{background:linear-gradient(180deg,#b4e07e 0 16%,#93cc6a 16% 32%,#6fb558 32% 48%,#529c4b 48% 64%,#3c8442 64% 80%,#2a6a37 80%);}
-.rr-scene.space{background:linear-gradient(180deg,#43308a 0 16%,#382878 16% 32%,#2d2066 32% 48%,#231953 48% 64%,#1a1240 64% 80%,#110b2e 80%);}
-.rr-scene.city{background:linear-gradient(180deg,#ffa86e 0 16%,#f48a6c 16% 32%,#d46f82 32% 48%,#a65c8c 48% 64%,#744d8e 64% 80%,#46396e 80%);}
+/* reef: muted teal, low saturation, darkening with depth */
+.rr-scene.aqua{background:linear-gradient(180deg,#5aa6b5 0 16%,#4b94a6 16% 32%,#3e8296 32% 48%,#337085 48% 64%,#295e73 64% 80%,#1f4c60 80%);}
+/* jungle: vivid lime to deep leaf green */
+.rr-scene.jungle{background:linear-gradient(180deg,#c6ef5a 0 16%,#9fdf45 16% 32%,#77c937 32% 48%,#52ae2e 48% 64%,#389228 64% 80%,#237420 80%);}
+/* space: near-black indigo */
+.rr-scene.space{background:linear-gradient(180deg,#2a1a5e 0 16%,#22164f 16% 32%,#1b1141 32% 48%,#140c33 48% 64%,#0e0826 64% 80%,#08041a 80%);}
+/* city: dusty sunset into smoggy night */
+.rr-scene.city{background:linear-gradient(180deg,#e9a07c 0 16%,#d38a80 16% 32%,#b47786 32% 48%,#8f6888 48% 64%,#6a5880 64% 80%,#454569 80%);}
 .rr-rays{display:none;}
 
 /* ambience: everything snaps to whole pixels */
 .rr-amb{
   position:absolute;bottom:-14px;width:6px;height:6px;
-  background:rgba(220,245,255,.55);box-shadow:0 0 0 2px rgba(255,255,255,.5);
+  background:rgba(200,232,240,.45);box-shadow:0 0 0 2px rgba(220,240,245,.4);
   animation:rise linear infinite;pointer-events:none;
 }
 @keyframes rise{from{transform:translateY(0)}to{transform:translateY(-110vh)}}
@@ -582,7 +605,18 @@ const css = `
   75%{transform:translate(-18px,81vh) rotate(270deg)}
   100%{transform:translate(0,110vh) rotate(360deg)}
 }
-.rr-star{position:absolute;background:#fff;pointer-events:none;animation:twinkle 2.4s steps(1,end) infinite;}
+.rr-star{position:absolute;width:3px;height:3px;background:#fff;pointer-events:none;opacity:.55;}
+.rr-star.dim{opacity:.3;}
+.rr-star.tw{animation:twinkle var(--d,3s) steps(1,end) infinite;}
+.rr-star.big{box-shadow:3px 0 #fff,-3px 0 #fff,0 3px #fff,0 -3px #fff;animation:sparkle var(--d,3s) steps(1,end) infinite;}
+@keyframes sparkle{0%,100%{opacity:.4;transform:scale(.67)}50%{opacity:1;transform:none}}
+.rr-comet{position:absolute;width:44px;height:44px;pointer-events:none;z-index:1;
+  animation:comet 13s steps(260,end) infinite;opacity:0;}
+@keyframes comet{
+  0%{left:92%;top:-14%;opacity:1}
+  22%{left:-14%;top:96%;opacity:1}
+  22.01%,100%{left:-14%;top:96%;opacity:0}
+}
 @keyframes twinkle{0%,100%{opacity:.35}50%{opacity:1}}
 .rr-skyline{
   position:absolute;inset:0;pointer-events:none;opacity:.45;
@@ -593,16 +627,16 @@ const css = `
   background-position:bottom left 12px,bottom left 40px;
   background-repeat:no-repeat;
 }
-.rr-window{position:absolute;width:6px;height:6px;pointer-events:none;background:#ffd980;animation:twinkle 3.4s steps(1,end) infinite;}
+.rr-window{position:absolute;width:6px;height:6px;pointer-events:none;background:#ffcc66;animation:twinkle 3.4s steps(1,end) infinite;}
 
 .rr-ground{position:absolute;left:0;right:0;bottom:0;height:12px;pointer-events:none;}
-.rr-ground.aqua{background:linear-gradient(180deg,#c9a45e 0 4px,#e8cf8f 4px);}
-.rr-ground.jungle{background:linear-gradient(180deg,#3f5a20 0 4px,#6d8430 4px);}
-.rr-ground.space{background:linear-gradient(180deg,#6a7285 0 4px,#9aa3b2 4px);}
+.rr-ground.aqua{background:linear-gradient(180deg,#a8956a 0 4px,#cdbb8a 4px);}
+.rr-ground.jungle{background:linear-gradient(180deg,#5a3a1c 0 4px,#7a5226 4px);}
+.rr-ground.space{background:linear-gradient(180deg,#3a3555 0 4px,#5a5578 4px);}
 .rr-ground.city{
   background:
-    repeating-linear-gradient(90deg,transparent 0 24px,#ffd166 24px 42px,transparent 42px 66px) 0 6px/100% 3px no-repeat,
-    linear-gradient(180deg,#2b2e38 0 4px,#4a4f5c 4px);
+    repeating-linear-gradient(90deg,transparent 0 24px,#f2c230 24px 42px,transparent 42px 66px) 0 6px/100% 3px no-repeat,
+    linear-gradient(180deg,#2e2c36 0 4px,#45434f 4px);
 }
 
 /* ---------- lanes & cells ---------- */
