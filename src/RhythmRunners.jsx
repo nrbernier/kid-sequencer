@@ -196,7 +196,7 @@ export const THEMES = {
       { id: "worker",  emoji: "👷", color: "#f2a530", flip: true },
       { id: "runner",  emoji: "🏃", color: "#e0587a", flip: true },
       { id: "cyclist", emoji: "🚴", color: "#4fa3e0", flip: true },
-      { id: "dancer",  emoji: "🕺", color: "#a77be6", flip: false },
+      { id: "skater",  emoji: "🛹", color: "#a77be6", flip: false },
     ],
     items: {
       worker: [
@@ -214,7 +214,7 @@ export const THEMES = {
         { id: "sg-g", label: "Sol", icon: <Sign color="#6fb07a" />, kind: "note", voice: "bell", note: "G5" },
         { id: "sg-a", label: "La",  icon: <Sign color="#5a8fc8" />, kind: "note", voice: "bell", note: "A5" },
       ],
-      dancer: [
+      skater: [
         { id: "vn-c", label: "Do",   icon: <Vinyl color="#e0635a" />, kind: "soft", voice: "keys", note: "C4" },
         { id: "vn-g", label: "Sol",  icon: <Vinyl color="#6fb07a" />, kind: "soft", voice: "keys", note: "G4" },
         { id: "bb-c",  label: "Do M", icon: <Boombox color="#e0635a" />, kind: "chord", voice: "keys", notes: ["C3","G3","E4","C5"] },
@@ -228,7 +228,7 @@ export const THEMES = {
       [2, 6, 10, 14].forEach((s) => (g[`runner-${s}`] = "lid"));
       g["runner-15"] = "hydrant";
       g["cyclist-0"] = "sg-c"; g["cyclist-3"] = "sg-e"; g["cyclist-6"] = "sg-g"; g["cyclist-10"] = "sg-a"; g["cyclist-13"] = "sg-g";
-      g["dancer-0"] = "bb-c"; g["dancer-8"] = "bb-f";
+      g["skater-0"] = "bb-c"; g["skater-8"] = "bb-f";
       return g;
     },
     defaultSel: { lane: "cyclist", item: "sg-c" },
