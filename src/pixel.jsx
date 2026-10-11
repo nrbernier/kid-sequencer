@@ -595,6 +595,13 @@ const CHEV = ["x...", "xx..", ".xx.", "..xx", ".xx.", "xx..", "x..."];
 G.speed1 = CHEV;
 G.speed2 = CHEV.map((r) => r + "." + r);
 G.speed3 = CHEV.map((r) => r + "." + r + "." + r);
+/* major / minor: happy and sad faces */
+G.happy = ["..xxxxx..", ".x.....x.", "x..x.x..x", "x.......x", "x.x...x.x", "x..xxx..x", ".x.....x.", "..xxxxx.."];
+G.sad   = ["..xxxxx..", ".x.....x.", "x..x.x..x", "x.......x", "x..xxx..x", "x.x...x.x", ".x.....x.", "..xxxxx.."];
+G.meh   = ["..xxxxx..", ".x.....x.", "x..x.x..x", "x.......x", "x.......x", "x..xxxx.x", ".x.....x.", "..xxxxx.."];
+G.peak  = ["...x.....", "..xxx..x.", ".xxxxxxxx", "xxxxxxxxx"];
+G.spark = ["....x....", "....x....", "...xxx...", ".xxxxxxx.", "...xxx...", "....x....", "....x...."];
+G.moon  = ["..xxxx...", ".xxx.....", "xxx......", "xxx......", "xxx......", "xxx......", ".xxx.....", "..xxxx..."];
 
 /* ======================= palettes ======================= */
 const P = {
