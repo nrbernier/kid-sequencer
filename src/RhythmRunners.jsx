@@ -809,6 +809,31 @@ export default function RhythmRunners() {
 
   const clearAll = () => setGrids((all) => ({ ...all, [theme]: {} }));
 
+  /* ---------- fullscreen (not available on iPhone Safari: use Add to Home Screen there) ---------- */
+  const canFullscreen = typeof document !== "undefined" &&
+    !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+  const [isFull, setIsFull] = useState(false);
+  useEffect(() => {
+    const onChange = () => setIsFull(!!(document.fullscreenElement || document.webkitFullscreenElement));
+    document.addEventListener("fullscreenchange", onChange);
+    document.addEventListener("webkitfullscreenchange", onChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", onChange);
+      document.removeEventListener("webkitfullscreenchange", onChange);
+    };
+  }, []);
+  const toggleFullscreen = async () => {
+    try {
+      if (document.fullscreenElement || document.webkitFullscreenElement) {
+        await (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      } else {
+        const el = document.documentElement;
+        await (el.requestFullscreen || el.webkitRequestFullscreen).call(el);
+        try { await screen.orientation?.lock?.("landscape"); } catch (e) { /* not supported everywhere */ }
+      }
+    } catch (e) { /* ignore: user gesture or browser refused */ }
+  };
+
   /* ---------- render ---------- */
   return (
     <div className={`rr-root ${T.sceneClass}`}>
@@ -838,6 +863,15 @@ export default function RhythmRunners() {
             🧽
           </button>
           <button className="rr-tool" onClick={clearAll} title="Clear all">🗑️</button>
+          {canFullscreen && (
+            <button className="rr-tool rr-full" onClick={toggleFullscreen} title={isFull ? "Exit full screen" : "Full screen"}>
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                {isFull
+                  ? <path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" />
+                  : <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />}
+              </svg>
+            </button>
+          )}
         </div>
       </header>
 
@@ -936,7 +970,9 @@ const css = `
 
 .rr-root{
   font-family:'Fredoka',sans-serif;
-  height:100vh; display:flex; flex-direction:column;
+  height:100vh; height:100dvh; display:flex; flex-direction:column;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  box-sizing:border-box;
   color:#eaf6ff; user-select:none; -webkit-user-select:none; overflow:hidden;
   transition:background 1s;
 }
@@ -976,6 +1012,7 @@ const css = `
 
 /* ---------- scene ---------- */
 .rr-scene{
+  min-height:0;
   flex:1;position:relative;margin:0 10px;border-radius:18px;overflow:hidden;
   box-shadow:inset 0 0 60px rgba(0,20,50,.45),0 10px 30px rgba(0,0,0,.35);
   display:flex;flex-direction:column;transition:background 1s;
@@ -1055,7 +1092,8 @@ const css = `
 .rr-cell.beat{border-left:1px solid rgba(255,255,255,.1);}
 .rr-cell.now{background:rgba(255,255,255,.09);}
 .rr-obj{
-  position:absolute;inset:12% 8%;display:block;pointer-events:none;
+  position:absolute;left:50%;top:50%;translate:-50% -50%;
+  width:clamp(24px,84%,46px);aspect-ratio:1;max-height:86%;display:block;pointer-events:none;
   filter:drop-shadow(0 3px 4px rgba(0,0,0,.35));
 }
 .rr-obj.shake{animation:wob .38s ease;}
@@ -1097,5 +1135,30 @@ const css = `
 .rr-pal.sel{background:var(--lc);transform:scale(1.08);box-shadow:0 0 0 3px rgba(255,255,255,.55),0 4px 10px rgba(0,0,0,.35);}
 .rr-pal.sel .rr-pal-lb{color:#08283f;font-weight:700;}
 .rr-pal-ic{width:30px;height:30px;display:block;}
+.rr-full{color:#eaf6ff;}
+
+/* ---------- short screens: phones in landscape ---------- */
+@media (max-height:520px){
+  .rr-header{padding:4px 10px;gap:6px;flex-wrap:nowrap;}
+  .rr-header h1{font-size:16px;white-space:nowrap;}
+  .rr-sub{display:none;}
+  .rr-controls{gap:5px;}
+  .rr-play{width:38px;height:38px;font-size:15px;}
+  .rr-theme button{width:30px;height:30px;font-size:15px;}
+  .rr-tempo button,.rr-tool{width:32px;height:32px;font-size:15px;}
+  .rr-scene{margin:0 6px;border-radius:12px;}
+  .rr-palette{padding:5px 6px 6px;gap:6px;}
+  .rr-group{padding:3px 6px;gap:3px;}
+  .rr-pal{min-width:40px;padding:3px 4px 2px;}
+  .rr-pal-ic{width:22px;height:22px;}
+  .rr-pal-lb{font-size:10px;}
+}
+/* ---------- narrow screens: phones in portrait ---------- */
+@media (max-width:600px){
+  .rr-header{justify-content:center;}
+  .rr-header h1{width:100%;text-align:center;}
+  .rr-controls{flex-wrap:wrap;justify-content:center;}
+  .rr-fish{font-size:24px;}
+}
 .rr-pal-lb{font-size:11px;color:#dff2ff;font-weight:500;}
 `;
