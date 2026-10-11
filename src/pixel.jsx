@@ -32,9 +32,12 @@ export function Sprite({ grid, pal, canvas = 12 }) {
       const c = row[x];
       let run = 1;
       while (x + run < row.length && row[x + run] === c) run++;
-      const fill = c === "k" && !pal.k ? INK : pal[c];
+      // outlines follow the world's own ink colour (CSS --ink), unless a sprite sets its own
+      const ink = c === "k" && !pal.k;
+      const fill = ink ? INK : pal[c];
       if (c !== "." && fill)
-        rects.push(<rect key={`${x}-${y}`} x={x + ox} y={y + oy} width={run + 0.04} height={1.04} fill={fill} />);
+        rects.push(<rect key={`${x}-${y}`} x={x + ox} y={y + oy} width={run + 0.04} height={1.04}
+          fill={fill} style={ink ? { fill: "var(--ink, " + INK + ")" } : undefined} />);
       x += run;
     }
   });
@@ -49,46 +52,56 @@ export function Sprite({ grid, pal, canvas = 12 }) {
 export const G = {
   /* ---------- reef ---------- */
   crab: [
-    ".kk......kk.",
-    "krrk....krrk",
-    "kr.kk..kk.rk",
-    ".krrk..krrk.",
-    "..kkkkkkkk..",
-    ".krwkrrkwrk.",
-    "krrrrrrrrrrk",
-    "krrlrrrrlrrk",
-    ".kkrrrrrrkk.",
-    "k.k.kkkk.k.k",
+    "kk.kk......kk.kk",
+    "krkrk......krkrk",
+    "krrrk......krrrk",
+    ".krk........krk.",
+    ".krk.kk..kk.krk.",
+    "..krkwk..kwkrk..",
+    "...kkkkkkkkkk...",
+    "..krrrrrrrrrrk..",
+    ".krrlrrrrrrlrrk.",
+    "krrrrrrrrrrrrrrk",
+    "krrrrrrkkrrrrrrk",
+    ".krrrrrrrrrrrrk.",
+    "..kkkkkkkkkkkk..",
+    ".kk.k.k..k.k.kk.",
+    "k..k.k....k.k..k",
   ],
   puffer: [
-    "....k..k....",
-    "..kkkkkkk...",
-    ".kyyyyyyyk.k",
-    "kyyyyyywwyk.",
-    "kyyyyyywkyyk",
-    "kyyyyyyyyyok",
-    "kydyyyyyyyk.",
-    ".kdddyyyyyk.",
-    "..kkkkkkkk.k",
-    "...k..k.....",
+    "......k..k......",
+    "...k..k..k..k...",
+    "....kkkkkkkk....",
+    "...kyyyyyyyyk...",
+    "k.kyyyyyyyywwyk.",
+    "kokyyyyyyyywkyyk",
+    "kokyyyyyyyyyyyok",
+    "k.kydyyyyyyyyyk.",
+    "...kddyyyyyyyk..",
+    "....kddddyyyk...",
+    "..k..kkkkkkk.k..",
+    "......k...k.....",
   ],
   fish: [
-    "...kkkkkk...",
-    "k.koowooook.",
-    "kokoowoowkok",
-    "kooowwoooook",
-    "kokoowoooook",
-    "k.koowoooak.",
-    "...kkkkkk...",
+    "......kkkkkk....",
+    "....kowwowwoook.",
+    "kk.koowwowwowkok",
+    "kokooowwowwooook",
+    "kwkooowwowwoooak",
+    "kokooowwowwooook",
+    "kk.koowwowwook..",
+    "....kkkkkkkkk...",
+    "......kok.......",
   ],
   turtle: [
-    "..kkkkk.....",
-    ".kgGgGgk.kk.",
-    "kgGgGgGgkssk",
-    "kGgGgGgGksek",
-    "kkkkkkkkkssk",
-    ".ks.ks.ksk..",
-    ".kk.kk.kk...",
+    "....kkkkkk......",
+    "..kkgGggGgkk....",
+    ".kgGggGGggGgk.kk",
+    "kgGgGggGggGgksek",
+    "kGgggGgggGggkssk",
+    "kkkkkkkkkkkkksk.",
+    ".kssk....ksssk..",
+    ".kkk.....kkkkk..",
   ],
   rock: [
     "...kkkkk....",
@@ -162,58 +175,76 @@ export const G = {
 
   /* ---------- jungle ---------- */
   gorilla: [
-    "...kkkkkk...",
-    "..kbbbbbbk..",
-    ".kbffffffbk.",
-    ".kfwkffkwfk.",
-    ".kbfffffffbk",
-    "..kbfkkfbk..",
-    ".kbbbffbbbk.",
-    "kbbbbbbbbbbk",
-    "kbfkbbbbkfbk",
-    "kffkbbbbkffk",
-    ".kk.kbbk.kk.",
-    "....kkkk....",
+    "......kkkk......",
+    ".....kbbbbk.....",
+    "....kbbbbbbk....",
+    "....kbkkkkbk....",
+    "....kfwkkwfk....",
+    "....kffffffk....",
+    "....kfkffkfk....",
+    "..kkkbfkkfbkkk..",
+    ".kbbbbbffbbbbbk.",
+    "kbbbbbffffbbbbbk",
+    "kbbkbbffffbbkbbk",
+    "kbbkbbbffbbbkbbk",
+    "kbbkbbbbbbbbkbbk",
+    "kffkbbbkkbbbkffk",
+    ".kk.kbbk.kbbk.kk",
+    "....kkkk.kkkk...",
   ],
   parrot: [
-    "...kkkk...",
-    "..krrrrk..",
-    ".krrrwekk.",
-    ".krrrrknnk",
-    ".krrrrrknk",
-    "kyrrrrrrk.",
-    "kyyrrrrrk.",
-    "kuyyrrrk..",
-    "kuuyyrrk..",
-    ".kuuuuk...",
-    "..kuuk....",
-    "...kk.....",
+    "........kkkk....",
+    "......kkrrrrkk..",
+    ".....krrrrrwwkkk",
+    ".....krrrrwewknk",
+    ".....krrrrrwknnk",
+    "....krrrrrrrknk.",
+    "...krrrrrrrrk.k.",
+    "..krryyyyrrrk...",
+    "..kryyuuuyrrk...",
+    ".kruuuuuuurk....",
+    ".kuuuuuuurk.....",
+    "kruuuuuuk.......",
+    "krrruuk.........",
+    "krrrk...........",
+    "krrk............",
+    "kk..............",
   ],
   monkey: [
-    "...kkkkkk...",
-    "..kbbbbbbk..",
-    "kkbttttttbkk",
-    "ktbtkttktbtk",
-    "kkbttttttbkk",
-    "..kttkkttk..",
-    "...kbttbk...",
-    "..kbbttbbk..",
-    ".kbbbttbbbk.",
-    ".kbkbbbbkbk.",
-    ".kk.kbbk.kk.",
-    "....kk.kk...",
+    ".....kkkkkk.....",
+    "....kbbbbbbk....",
+    ".kk.kbbbbbbk.kk.",
+    "ktbkbttbbttbkbtk",
+    "ktbkttttttttkbtk",
+    ".kkktkttttktkkk.",
+    "...kttttttttk...",
+    "...kttkkkkttk...",
+    "....kkttttkk....",
+    "...kbbbttbbbk...",
+    "..kbbbttttbbbk..",
+    ".kbkbbttttbbkbk.",
+    ".kbkbbbttbbbkbkk",
+    ".ktk.kbbbbk.ktkb",
+    "..k..kbkkbk..kk.",
+    ".....kk..kk.....",
   ],
   sloth: [
-    "...kkkkkk...",
-    "..kggggggk..",
-    ".kgffffffgk.",
-    "kgfmmffmmfgk",
-    "kgfmkffkmfgk",
-    "kgffffffffgk",
-    ".kgffkkffgk.",
-    "..kggggggk..",
-    ".kggggggggk.",
-    ".kk.k..k.kk.",
+    "wwwkwwwwwwwwkwww",
+    "dddkddddddddkddd",
+    "...kg......gk...",
+    "...kgk....kgk...",
+    "...kgk....kgk...",
+    "...kgkkkkkkgk...",
+    "...kggffffggk...",
+    "...kgmmffmmgk...",
+    "...kgmkffkmgk...",
+    "...kgmffffmgk...",
+    "...kgffkkffgk...",
+    "...kgfkffkfgk...",
+    "..kgggffffgggk..",
+    "..kggggggggggk..",
+    "...kggggggggk...",
+    "....kkkkkkkk....",
   ],
   log: [
     ".kkkkkkkkkk.",
@@ -288,50 +319,61 @@ export const G = {
 
   /* ---------- space ---------- */
   rocket: [
-    "..kkk.......",
-    ".krrkkkkkk..",
-    "kfkwwwwwwkk.",
-    "ffkwwbbwwwrk",
-    "ffkwwbbwwwrk",
-    "kfkwwwwwwkk.",
-    ".krrkkkkkk..",
-    "..kkk.......",
+    "..kkk...........",
+    "..krrkkkkkkkk...",
+    "fkkkwwwwwwwwwkk.",
+    "ffkwwwwkbbkwwwrk",
+    "yfkwwwwkbwbkwwrk",
+    "ffkwwwwkbbkwwwrk",
+    "fkkkwwwwwwwwwkk.",
+    "..krrkkkkkkkk...",
+    "..kkk...........",
   ],
   alien: [
-    "..k....k..",
-    "...k..k...",
-    "..kkkkkk..",
-    ".kggggggk.",
-    "kgwkggwkgk",
-    "kgkkggkkgk",
-    ".kggggggk.",
-    "..kgkkgk..",
-    "..kggggk..",
-    ".kgkggkgk.",
-    ".kk.kk.kk.",
+    "..kgk......kgk..",
+    "...k........k...",
+    "....k......k....",
+    "....kkkkkkkk....",
+    "..kkggggggggkk..",
+    ".kggggggggggggk.",
+    "kgkkkggggggkkkgk",
+    "kgkwkggggggkwkgk",
+    "kgkkkggggggkkkgk",
+    ".kggggggggggggk.",
+    "..kgggkkkkgggk..",
+    "...kggggggggk...",
+    "....kkkkkkkk....",
+    "...kgk.kk.kgk...",
+    "..kgk......kgk..",
+    "..kk........kk..",
   ],
   ufo: [
-    "....kkkk....",
-    "...kbbwbk...",
-    "..kbbbbbbk..",
-    ".kkkkkkkkkk.",
-    "kmmymmymmymk",
-    ".kkkkkkkkkk.",
-    "....kkkk....",
+    "......kkkk......",
+    ".....kbbwbk.....",
+    "....kbbggbwk....",
+    "....kbggggbk....",
+    ".kkkkkkkkkkkkkk.",
+    "kmmymmmymmmymmmk",
+    ".kkkkkkkkkkkkkk.",
+    "....kyk..kyk....",
   ],
   robot: [
-    ".....r.....",
-    ".....k.....",
-    ".kkkkkkkkk.",
-    ".kmmmmmmmk.",
-    ".kmbbmbbmk.",
-    ".kmmkkkmmk.",
-    ".kkkkkkkkk.",
-    "kmkbbbbbkmk",
-    "kmkbrbybkmk",
-    "kkkbbbbbkkk",
-    "..kkkkkkk..",
-    "..kk...kk..",
+    ".......rr.......",
+    ".......kk.......",
+    "...kkkkkkkkkk...",
+    "...kmmmmmmmmk...",
+    "...kmbbmmbbmk...",
+    "...kmbwmmbwmk...",
+    "...kmmmmmmmmk...",
+    "...kmkmkmkmmk...",
+    "...kkkkkkkkkk...",
+    ".kk.kmmmmmmk.kk.",
+    "kmmkkbbrybbkkmmk",
+    "kmk.kbbbbbbk.kmk",
+    "kk..kmmmmmmk..kk",
+    "....kmk..kmk....",
+    "...kkmk..kmkk...",
+    "...kkkk..kkkk...",
   ],
   satellite: [
     ".....kk.....",
@@ -389,58 +431,74 @@ export const G = {
 
   /* ---------- city ---------- */
   worker: [
-    "..kkkkkk..",
-    ".khhhhhhk.",
-    "kkkkkkkkkk",
-    ".kssssssk.",
-    ".kskssksk.",
-    ".kssssssk.",
-    "..kkkkkk..",
-    ".kooyoook.",
-    "kooooyoook",
-    "ksoooooosk",
-    ".kbbkkbbk.",
-    ".kkk..kkk.",
+    ".....kkkkkk.....",
+    "....khhhhhhk....",
+    "...khhhhhhhhk...",
+    "..kkkkkkkkkkkk..",
+    "....kssssssk....",
+    "....kskssksk....",
+    "....kssssssk....",
+    "....ksskkssk....",
+    ".....kkkkkk.....",
+    "...koyoooooyok..",
+    "..ksoyoooooyosk.",
+    "..ksoyyyyyyyosk.",
+    "..kk.kbbbbbk.kk.",
+    ".....kbbkbbk....",
+    ".....kbbkbbk....",
+    "....kkkk.kkkk...",
   ],
   runner: [
-    "...kkkk...",
-    "..khhhhk..",
-    "..khsssk..",
-    "..ksskssk.",
-    "...kssk...",
-    "..kpppppk.",
-    ".kspppppsk",
-    "..kpppppk.",
-    "..kbbbbbk.",
-    ".ksk..ksk.",
-    "ksk....ksk",
-    "kk......kk",
+    "......kkkk......",
+    ".....khhhhk.....",
+    ".....khhssk.....",
+    ".....khsksk.....",
+    ".....kssssk.....",
+    "......kkkk......",
+    "....kppppppk....",
+    "..kspppppppsk...",
+    ".ks.kppppk.ks...",
+    ".....kbbbbk.....",
+    "....kbbkkbbk....",
+    "...kssk..kssk...",
+    "..kssk....kssk..",
+    ".kssk......ksk..",
+    "krrk.......krrk.",
+    "kkk........kkk..",
   ],
   cyclist: [
-    "......kkk...",
-    ".....kuuuk..",
-    ".....kssk...",
-    "....kgggk...",
-    "...kgggggkk.",
-    "....kgggk.k.",
-    "....kbbk..k.",
-    ".kkk.kbk.kkk",
-    "k...kkkkk..k",
-    "k...k..k...k",
-    ".kkk....kkk.",
+    ".........kkk....",
+    "........kuuuk...",
+    "........kssk....",
+    "........kskk....",
+    ".......kgggk....",
+    "......kggggk.kk.",
+    "......kggggggk..",
+    ".......kbbk..k..",
+    ".kkkk.kbbk.kkkk.",
+    "k....kkkbkk....k",
+    "k.kk.k.kk.k.kk.k",
+    "k.kk.kkk..k.kk.k",
+    "k....k....k....k",
+    ".kkkk......kkkk.",
   ],
   dancer: [
-    "k...kkk...k",
-    "sk.khhhk.ks",
-    ".skkssskks.",
-    "..ksksksk..",
-    "...kvvvk...",
-    "..kvvvvvk..",
-    "..kvvyvvk..",
-    "...kbbbk...",
-    "..kbk.kbk..",
-    ".kbk...kbk.",
-    ".kk.....kk.",
+    "....kkkk....ks..",
+    "...khhhhk...ks..",
+    "..khhhhhhk..ks..",
+    "..khssssk..ks...",
+    "..khskssk.ks....",
+    "...kssssk.ks....",
+    "....kkkkvvk.....",
+    "...kvvvvvvk.....",
+    "..kvvvyvvvk.....",
+    "..kskvvvvk......",
+    "...kkbbbbk......",
+    "....kbbbbk......",
+    "...kbbk.kbk.....",
+    "..kbbk...kbk....",
+    ".kbbk.....kbk...",
+    ".kkkk.....kkkk..",
   ],
   anvil: [
     "kkkkkkkkkkk.",
@@ -540,22 +598,26 @@ G.speed3 = CHEV.map((r) => r + "." + r + "." + r);
 
 /* ======================= palettes ======================= */
 const P = {
-  crab: { r: "#ff6b5b", l: "#ffb09f", w: "#ffffff" },
-  puffer: { y: "#ffd166", d: "#e0a63a", w: "#ffffff", o: "#ff8a5c" },
-  fish: { o: "#ff8c3a", w: "#ffffff", a: "#c4561a" },
-  turtle: { g: "#5fbf6a", G: "#2f7d44", s: "#b6e88a", e: INK },
-  gorilla: { b: "#4a4054", f: "#9a8a9e", w: "#ffffff" },
-  parrot: { r: "#ff4d5e", y: "#ffd23f", u: "#3fa8ff", w: "#ffffff", e: INK, n: "#3a3a46" },
-  monkey: { b: "#a0612e", t: "#f2c69a" },
-  sloth: { g: "#9c8a72", f: "#efe0c2", m: "#5a4a3a" },
-  rocket: { r: "#ff4d5e", w: "#eef2f8", b: "#3fa8ff", f: "#ffb020" },
-  alien: { g: "#6ee77a", w: "#ffffff" },
-  ufo: { b: "#8fd7ff", w: "#ffffff", m: "#b6bccb", y: "#ffe14d" },
-  robot: { m: "#b6bccb", b: "#3fa8ff", r: "#ff4d5e", y: "#ffe14d" },
-  worker: { h: "#ffcc22", s: "#f2c69a", o: "#ff8a1f", y: "#fff27a", b: "#3d6bd6" },
-  runner: { h: "#3a2a22", s: "#f2c69a", p: "#ff5d7a", b: "#3d3f55" },
-  cyclist: { u: "#3fa8ff", s: "#f2c69a", g: "#52c46b", b: "#3d3f55" },
-  dancer: { h: "#3a2a22", s: "#c98f62", v: "#a46bff", y: "#ffe14d", b: "#3d3f55" },
+  /* reef: muted, cool, sea-glass */
+  crab: { r: "#d9735f", l: "#eda894", w: "#f4efe6" },
+  puffer: { y: "#e8c46a", d: "#b8924a", w: "#f4efe6", o: "#d9805a" },
+  fish: { o: "#e0803f", w: "#f4efe6", a: "#9a4f22" },
+  turtle: { g: "#6fae84", G: "#3f7660", s: "#b5d6a0", e: "#0d2a3a" },
+  /* jungle: saturated and warm */
+  gorilla: { b: "#3d3550", f: "#a08aa6", w: "#ffffff" },
+  parrot: { r: "#ff2a3d", w: "#ffffff", e: "#1d2b10", n: "#2b2b38", y: "#ffd000", u: "#1e90ff" },
+  monkey: { b: "#b5651d", t: "#ffcf96" },
+  sloth: { g: "#a58a63", f: "#f6e3bb", m: "#4d3a28", w: "#9c6b3a", d: "#6b4423" },
+  /* space: neon on near-black */
+  rocket: { r: "#ff2e88", w: "#e8ecff", b: "#29d9ff", f: "#ffb300", y: "#fff05a" },
+  alien: { g: "#5dff6e", w: "#ffffff" },
+  ufo: { b: "#7fe9ff", w: "#ffffff", g: "#5dff6e", m: "#9aa0c8", y: "#fff05a" },
+  robot: { m: "#a9b0d6", b: "#29d9ff", w: "#ffffff", r: "#ff2e88", y: "#fff05a" },
+  /* city: dusky, slightly greyed */
+  worker: { h: "#f2c230", s: "#e3b48f", o: "#f07f2a", y: "#fff1a0", b: "#3d5aa8" },
+  runner: { h: "#3a2a26", s: "#e3b48f", p: "#e0587a", b: "#3f4055", r: "#d94a4a" },
+  cyclist: { u: "#3a8fd6", s: "#e3b48f", g: "#4fae6a", b: "#3f4055" },
+  dancer: { h: "#2a1f1c", s: "#b07e58", v: "#9a63e0", y: "#f2d64a", b: "#3f4055" },
 };
 
 /* ======================= characters ======================= */
@@ -565,39 +627,39 @@ const CHAR_GRID = {
   rocket: "rocket", alien: "alien", ufo: "ufo", robot: "robot",
   worker: "worker", runner: "runner", cyclist: "cyclist", dancer: "dancer",
 };
-export const CharSprite = ({ id }) => <Sprite grid={G[CHAR_GRID[id]]} pal={P[id]} />;
+export const CharSprite = ({ id }) => <Sprite grid={G[CHAR_GRID[id]]} pal={P[id]} canvas={16} />;
 
 /* world buttons use one character from each world */
 export const WORLD_ICON = { aqua: "fish", jungle: "parrot", space: "alien", city: "worker" };
 
 /* ======================= objects (same names as before) ======================= */
-export const Rock = () => <Sprite grid={G.rock} pal={{ r: "#8d7b8e", d: "#5f5062", l: "#b9a8ba" }} />;
-export const Coral = () => <Sprite grid={G.coral} pal={{ c: "#ff8a6b" }} />;
-export const Bubble = () => <Sprite grid={G.bubble} pal={{ k: "#2a6b9a", b: "#bfe9ff", w: "#ffffff", d: "#86c6ea" }} />;
-export const Urchin = () => <Sprite grid={G.urchin} pal={{ k: "#3a3768", p: "#7a76b8", l: "#a9a5e0", d: "#56529a" }} />;
+export const Rock = () => <Sprite grid={G.rock} pal={{ r: "#7d8a8f", d: "#56636a", l: "#a9b5b8" }} />;
+export const Coral = () => <Sprite grid={G.coral} pal={{ c: "#d98a7a" }} />;
+export const Bubble = () => <Sprite grid={G.bubble} pal={{ k: "#2c5f78", b: "#b6dbe6", w: "#f4fbfd", d: "#86b6c6" }} />;
+export const Urchin = () => <Sprite grid={G.urchin} pal={{ k: "#2e3552", p: "#6a7398", l: "#98a2c4", d: "#4c5578" }} />;
 export const Shell = ({ color }) => <Sprite grid={G.shell} pal={tones(color)} />;
 export const Starfish = ({ color }) => <Sprite grid={G.starfish} pal={tones(color)} />;
 
-export const Log = () => <Sprite grid={G.log} pal={{ w: "#a8693a", d: "#7a4a24", r: "#e0b07a" }} />;
-export const Drum = () => <Sprite grid={G.drum} pal={{ s: "#f3e0c0", o: "#d77a3f", d: "#9a4f22" }} />;
+export const Log = () => <Sprite grid={G.log} pal={{ w: "#b8692a", d: "#7a4216", r: "#f2c27a" }} />;
+export const Drum = () => <Sprite grid={G.drum} pal={{ s: "#fff0cc", o: "#ee6a1f", d: "#a8400e" }} />;
 export const Coconut = () => <Sprite grid={G.coconut} pal={{ c: "#7a4f2a", d: "#4a2e15", l: "#a87a4f" }} />;
-export const SeedPod = () => <Sprite grid={G.pod} pal={{ g: "#a9c15a", d: "#6d8430", l: "#d6e88a" }} />;
+export const SeedPod = () => <Sprite grid={G.pod} pal={{ g: "#b8e03a", d: "#6f9a14", l: "#e8ff8a" }} />;
 export const Fruit = ({ color }) => <Sprite grid={G.fruit} pal={{ ...tones(color), g: "#5fbf3a" }} />;
 export const Flower = ({ color }) => <Sprite grid={G.flower} pal={{ ...tones(color), y: "#ffe14d" }} />;
 
-export const Asteroid = () => <Sprite grid={G.rock} pal={{ r: "#9aa3b2", d: "#5f6878", l: "#c9d0dc" }} />;
-export const Satellite = () => <Sprite grid={G.satellite} pal={{ b: "#3d6bd6", m: "#cfd6e4", r: "#ff4d5e" }} />;
-export const Laser = () => <Sprite grid={G.laser} pal={{ y: "#ffe14d", o: "#ff9f1a", k: "#a35a00" }} />;
-export const Sparkle = () => <Sprite grid={G.sparkle} pal={{ k: "#3a5a9a", b: "#8fd7ff", w: "#ffffff" }} />;
+export const Asteroid = () => <Sprite grid={G.rock} pal={{ r: "#8a8fb8", d: "#585d86", l: "#c2c6ec" }} />;
+export const Satellite = () => <Sprite grid={G.satellite} pal={{ b: "#29d9ff", m: "#c9cdea", r: "#ff2e88" }} />;
+export const Laser = () => <Sprite grid={G.laser} pal={{ y: "#fff05a", o: "#ff9a1f", k: "#a34a00" }} />;
+export const Sparkle = () => <Sprite grid={G.sparkle} pal={{ k: "#3a3a8a", b: "#7fe9ff", w: "#ffffff" }} />;
 export const Planet = ({ color }) => <Sprite grid={G.planet} pal={{ ...tones(color), r: "#f2f5fa" }} />;
 export const StarIcon = ({ color }) => <Sprite grid={G.starfish} pal={tones(color)} />;
 export const Comet = ({ color }) => <Sprite grid={G.comet} pal={{ ...tones(color), t: "#e8f4ff" }} />;
 
-export const Anvil = () => <Sprite grid={G.anvil} pal={{ m: "#7c8494", l: "#b6bccb", d: "#4f5563" }} />;
-export const Barrel = () => <Sprite grid={G.barrel} pal={{ u: "#4d7cc9", d: "#2f4f8a", l: "#8fb4ee" }} />;
-export const Lid = () => <Sprite grid={G.lid} pal={{ m: "#9aa3b2", l: "#d4d9e2", d: "#5f6878" }} />;
-export const Hydrant = () => <Sprite grid={G.hydrant} pal={{ r: "#e94f4f", l: "#ff9a9a", d: "#9a2a2a" }} />;
-export const Sign = ({ color }) => <Sprite grid={G.sign} pal={{ ...tones(color), w: "#f2f5fa", p: "#8d949f" }} />;
+export const Anvil = () => <Sprite grid={G.anvil} pal={{ m: "#77737f", l: "#aca8b4", d: "#4c4954" }} />;
+export const Barrel = () => <Sprite grid={G.barrel} pal={{ u: "#4a6fa8", d: "#2f4774", l: "#86a3cf" }} />;
+export const Lid = () => <Sprite grid={G.lid} pal={{ m: "#94929c", l: "#cfccd6", d: "#5d5a66" }} />;
+export const Hydrant = () => <Sprite grid={G.hydrant} pal={{ r: "#d9483f", l: "#f08a80", d: "#8a2a24" }} />;
+export const Sign = ({ color }) => <Sprite grid={G.sign} pal={{ ...tones(color), w: "#efe8e6", p: "#8a8690" }} />;
 export const Vinyl = ({ color }) => <Sprite grid={G.vinyl} pal={{ m: color, d: "#2a2c38", g: "#4a4d5e" }} />;
 export const Boombox = ({ color }) => <Sprite grid={G.boombox} pal={{ ...tones(color), d: "#8d949f" }} />;
 
