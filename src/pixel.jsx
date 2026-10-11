@@ -482,23 +482,22 @@ export const G = {
     "k....k....k....k",
     ".kkkk......kkkk.",
   ],
-  dancer: [
-    "....kkkk....ks..",
-    "...khhhhk...ks..",
-    "..khhhhhhk..ks..",
-    "..khssssk..ks...",
-    "..khskssk.ks....",
-    "...kssssk.ks....",
-    "....kkkkvvk.....",
-    "...kvvvvvvk.....",
-    "..kvvvyvvvk.....",
-    "..kskvvvvk......",
-    "...kkbbbbk......",
-    "....kbbbbk......",
-    "...kbbk.kbk.....",
-    "..kbbk...kbk....",
-    ".kbbk.....kbk...",
-    ".kkkk.....kkkk..",
+  skater: [ // skateboarder: cap, arms out for balance, board with wheels
+    ".......kkkk.....",
+    "......kccccck...",
+    "......kcccckkk..",
+    "......ksksk.....",
+    "......kssssk....",
+    ".......kkkk.....",
+    "kssskttttttkssk.",
+    "....kttttttk....",
+    ".....kbbbbk.....",
+    ".....kbbkbbk....",
+    "....kbbk.kbbk...",
+    "....kbk...kbk...",
+    "k..kwwk...kwwk.k",
+    ".kddddddddddddk.",
+    "...kyk....kyk...",
   ],
   anvil: [
     "kkkkkkkkkkk.",
@@ -617,7 +616,7 @@ const P = {
   worker: { h: "#f2c230", s: "#e3b48f", o: "#f07f2a", y: "#fff1a0", b: "#3d5aa8" },
   runner: { h: "#3a2a26", s: "#e3b48f", p: "#e0587a", b: "#3f4055", r: "#d94a4a" },
   cyclist: { u: "#3a8fd6", s: "#e3b48f", g: "#4fae6a", b: "#3f4055" },
-  dancer: { h: "#2a1f1c", s: "#b07e58", v: "#9a63e0", y: "#f2d64a", b: "#3f4055" },
+  skater: { c: "#d94a4a", s: "#c98f62", t: "#3fb0a8", b: "#3d5aa8", w: "#efe8e6", d: "#a77be6", y: "#f2d64a" },
 };
 
 /* ======================= characters ======================= */
@@ -625,7 +624,7 @@ const CHAR_GRID = {
   crab: "crab", puffer: "puffer", fish: "fish", turtle: "turtle",
   gorilla: "gorilla", parrot: "parrot", monkey: "monkey", sloth: "sloth",
   rocket: "rocket", alien: "alien", ufo: "ufo", robot: "robot",
-  worker: "worker", runner: "runner", cyclist: "cyclist", dancer: "dancer",
+  worker: "worker", runner: "runner", cyclist: "cyclist", skater: "skater",
 };
 export const CharSprite = ({ id }) => <Sprite grid={G[CHAR_GRID[id]]} pal={P[id]} canvas={16} />;
 
