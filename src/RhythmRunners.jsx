@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import * as Tone from "tone";
 
 /* ============================================================
-   REEF / JUNGLE / SPACE RHYTHMS — music sequencing for kids
+   RHYTHM RUNNERS — music sequencing for kids
    4 characters race across an invisible 16-step grid.
    Objects placed on their paths shake & play when reached.
    Everything stays in C-major pentatonic. Three worlds,
@@ -234,7 +234,7 @@ const Vinyl = ({ color }) => (
    melodic item:    { id, label, icon, kind:'note'|'soft'|'chord', voice, note|notes } */
 const THEMES = {
   aqua: {
-    title: "Récif Rythmes",
+    title: "Reef",
     icon: "🌊",
     sceneClass: "aqua",
     amb: "bubble",
@@ -246,7 +246,7 @@ const THEMES = {
     ],
     items: {
       crab: [
-        { id: "rock",  label: "Boum", icon: <Rock />,  sound: "deepboom" },
+        { id: "rock",  label: "Boom", icon: <Rock />,  sound: "deepboom" },
         { id: "coral", label: "Tom",  icon: <Coral />, sound: "deeptom" },
       ],
       puffer: [
@@ -255,7 +255,7 @@ const THEMES = {
       ],
       fish: [
         { id: "sh-c", label: "Do",  icon: <Shell color="#ff8fa3" />, kind: "note", voice: "deepPluck", note: "C4" },
-        { id: "sh-d", label: "Ré",  icon: <Shell color="#ffc36b" />, kind: "note", voice: "deepPluck", note: "D4" },
+        { id: "sh-d", label: "Re",  icon: <Shell color="#ffc36b" />, kind: "note", voice: "deepPluck", note: "D4" },
         { id: "sh-e", label: "Mi",  icon: <Shell color="#ffe86b" />, kind: "note", voice: "deepPluck", note: "E4" },
         { id: "sh-g", label: "Sol", icon: <Shell color="#7be38b" />, kind: "note", voice: "deepPluck", note: "G4" },
         { id: "sh-a", label: "La",  icon: <Shell color="#7bc8ff" />, kind: "note", voice: "deepPluck", note: "A4" },
@@ -280,7 +280,7 @@ const THEMES = {
   },
 
   jungle: {
-    title: "Jungle Rythmes",
+    title: "Jungle",
     icon: "🌴",
     sceneClass: "jungle",
     amb: "leaf",
@@ -292,16 +292,16 @@ const THEMES = {
     ],
     items: {
       gorilla: [
-        { id: "log",  label: "Boum", icon: <Log />,  sound: "log" },
-        { id: "drum", label: "Tam",  icon: <Drum />, sound: "djembe" },
+        { id: "log",  label: "Boom", icon: <Log />,  sound: "log" },
+        { id: "drum", label: "Tum",  icon: <Drum />, sound: "djembe" },
       ],
       parrot: [
-        { id: "coco", label: "Toc", icon: <Coconut />, sound: "block" },
+        { id: "coco", label: "Tock", icon: <Coconut />, sound: "block" },
         { id: "pod",  label: "Chh", icon: <SeedPod />, sound: "shakerpod" },
       ],
       monkey: [
         { id: "fr-c", label: "Do",  icon: <Fruit color="#ff6b6b" />, kind: "note", voice: "marimba", note: "C4" },
-        { id: "fr-d", label: "Ré",  icon: <Fruit color="#ff9f43" />, kind: "note", voice: "marimba", note: "D4" },
+        { id: "fr-d", label: "Re",  icon: <Fruit color="#ff9f43" />, kind: "note", voice: "marimba", note: "D4" },
         { id: "fr-e", label: "Mi",  icon: <Fruit color="#fdd54f" />, kind: "note", voice: "marimba", note: "E4" },
         { id: "fr-g", label: "Sol", icon: <Fruit color="#7bd15c" />, kind: "note", voice: "marimba", note: "G4" },
         { id: "fr-a", label: "La",  icon: <Fruit color="#b58cff" />, kind: "note", voice: "marimba", note: "A4" },
@@ -326,7 +326,7 @@ const THEMES = {
   },
 
   space: {
-    title: "Cosmos Rythmes",
+    title: "Space",
     icon: "🪐",
     sceneClass: "space",
     amb: "star",
@@ -338,16 +338,16 @@ const THEMES = {
     ],
     items: {
       rocket: [
-        { id: "ast", label: "Boum", icon: <Asteroid />,  sound: "boom8" },
+        { id: "ast", label: "Boom", icon: <Asteroid />,  sound: "boom8" },
         { id: "sat", label: "Ksh",  icon: <Satellite />, sound: "snare8" },
       ],
       alien: [
-        { id: "laser", label: "Piou", icon: <Laser />,   sound: "zap" },
-        { id: "spark", label: "Tic",  icon: <Sparkle />, sound: "tick8" },
+        { id: "laser", label: "Pew", icon: <Laser />,   sound: "zap" },
+        { id: "spark", label: "Tick",  icon: <Sparkle />, sound: "tick8" },
       ],
       ufo: [
         { id: "pl-c", label: "Do",  icon: <Planet color="#ff6b6b" />, kind: "note", voice: "chip", note: "C5" },
-        { id: "pl-d", label: "Ré",  icon: <Planet color="#ff9f43" />, kind: "note", voice: "chip", note: "D5" },
+        { id: "pl-d", label: "Re",  icon: <Planet color="#ff9f43" />, kind: "note", voice: "chip", note: "D5" },
         { id: "pl-e", label: "Mi",  icon: <Planet color="#ffe14d" />, kind: "note", voice: "chip", note: "E5" },
         { id: "pl-g", label: "Sol", icon: <Planet color="#7bd15c" />, kind: "note", voice: "chip", note: "G5" },
         { id: "pl-a", label: "La",  icon: <Planet color="#b58cff" />, kind: "note", voice: "chip", note: "A5" },
@@ -374,7 +374,7 @@ const THEMES = {
   },
 
   city: {
-    title: "Cité Rythmes",
+    title: "City",
     icon: "🏙️",
     sceneClass: "city",
     amb: "window",
@@ -387,15 +387,15 @@ const THEMES = {
     items: {
       worker: [
         { id: "anvil",  label: "Clang", icon: <Anvil />,  sound: "anvil" },
-        { id: "barrel", label: "Boum",  icon: <Barrel />, sound: "barrel" },
+        { id: "barrel", label: "Boom",  icon: <Barrel />, sound: "barrel" },
       ],
       runner: [
-        { id: "lid",     label: "Tchak", icon: <Lid />,     sound: "lid" },
-        { id: "hydrant", label: "Pshh",  icon: <Hydrant />, sound: "hiss" },
+        { id: "lid",     label: "Chak", icon: <Lid />,     sound: "lid" },
+        { id: "hydrant", label: "Pssh",  icon: <Hydrant />, sound: "hiss" },
       ],
       cyclist: [
         { id: "sg-c", label: "Do",  icon: <Sign color="#ff6b6b" />, kind: "note", voice: "bell", note: "C5" },
-        { id: "sg-d", label: "Ré",  icon: <Sign color="#ff9f43" />, kind: "note", voice: "bell", note: "D5" },
+        { id: "sg-d", label: "Re",  icon: <Sign color="#ff9f43" />, kind: "note", voice: "bell", note: "D5" },
         { id: "sg-e", label: "Mi",  icon: <Sign color="#ffe14d" />, kind: "note", voice: "bell", note: "E5" },
         { id: "sg-g", label: "Sol", icon: <Sign color="#7bd15c" />, kind: "note", voice: "bell", note: "G5" },
         { id: "sg-a", label: "La",  icon: <Sign color="#b58cff" />, kind: "note", voice: "bell", note: "A5" },
@@ -424,7 +424,7 @@ const THEMES = {
 const findItem = (themeId, laneId, itemId) =>
   THEMES[themeId].items[laneId]?.find((i) => i.id === itemId);
 
-export default function ReefRhythms() {
+export default function RhythmRunners() {
   const [theme, setTheme] = useState("aqua");
   const [grids, setGrids] = useState(() => ({
     aqua: THEMES.aqua.start(),
@@ -815,7 +815,7 @@ export default function ReefRhythms() {
       <style>{css}</style>
 
       <header className="rr-header">
-        <h1>{T.icon} {T.title}</h1>
+        <h1>{T.icon} Rhythm Runners <span className="rr-sub">{T.title}</span></h1>
         <div className="rr-controls">
           <div className="rr-theme">
             {THEME_ORDER.map((id) => (
@@ -834,10 +834,10 @@ export default function ReefRhythms() {
               </button>
             ))}
           </div>
-          <button className={`rr-tool ${eraser ? "sel" : ""}`} onClick={() => setEraser(!eraser)} title="Gomme">
+          <button className={`rr-tool ${eraser ? "sel" : ""}`} onClick={() => setEraser(!eraser)} title="Eraser">
             🧽
           </button>
-          <button className="rr-tool" onClick={clearAll} title="Tout effacer">🗑️</button>
+          <button className="rr-tool" onClick={clearAll} title="Clear all">🗑️</button>
         </div>
       </header>
 
@@ -948,6 +948,7 @@ const css = `
 .rr-header{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;gap:10px;flex-wrap:wrap;}
 .rr-header h1{margin:0;font-size:clamp(16px,2.6vw,24px);font-weight:700;letter-spacing:.5px;text-shadow:0 2px 8px rgba(0,0,0,.4);}
 .rr-controls{display:flex;align-items:center;gap:8px;}
+.rr-sub{font-weight:500;opacity:.7;font-size:.75em;margin-left:4px;}
 .rr-theme{
   display:flex;gap:2px;border-radius:999px;padding:4px;
   background:rgba(255,255,255,.1);
