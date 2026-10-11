@@ -37,12 +37,36 @@ const COMET = [
   ".kmmdk......",
   "..kkk.......",
 ];
-/* a fixed, irregular starfield: most stars still, some twinkle, a few sparkle */
-const STARS = Array.from({ length: 34 }, (_, i) => {
-  const r = (n) => ((Math.sin(i * 97.13 + n * 13.7) + 1) / 2); // deterministic pseudo-random
-  const kind = i % 6 === 0 ? "big" : i % 3 === 0 ? "tw" : r(3) > 0.5 ? "dim" : "";
-  return { x: r(1) * 98, y: r(2) * 90, kind, dur: (2.2 + r(4) * 2.6).toFixed(2), delay: (r(5) * 4).toFixed(2) };
+/* deterministic pseudo-random number in [0, 1) for (i, n) */
+const hash = (i, n) => {
+  const v = Math.sin(i * 127.1 + n * 311.7) * 43758.5453;
+  return v - Math.floor(v);
+};
+/* a fixed, scattered starfield: most stars still, some twinkle, a few sparkle */
+const STARS = Array.from({ length: 18 }, (_, i) => {
+  const kind = i % 7 === 0 ? "big" : i % 3 === 0 ? "tw" : hash(i, 3) > 0.5 ? "dim" : "";
+  return { x: 1 + hash(i, 1) * 97, y: 2 + hash(i, 2) * 86, kind,
+    dur: (2.4 + hash(i, 4) * 2.4).toFixed(2), delay: (hash(i, 5) * 4).toFixed(2) };
 });
+/* city skyline: buildings and their windows come from the same data, so windows always sit inside a building */
+const SKYLINE = (() => {
+  const out = [];
+  for (const back of [true, false]) {
+    let x = back ? -3 : -1, i = back ? 0 : 100;
+    while (x < 100) {
+      const w = back ? 7 + hash(i, 1) * 6 : 6 + hash(i, 1) * 5;
+      const h = back ? 45 + hash(i, 2) * 30 : 25 + hash(i, 2) * 30;
+      const wins = back ? [] : Array.from({ length: 80 }, (_, j) => {
+        const r = hash(i * 13 + j, 7);
+        return r < 0.08 ? "flick" : r < 0.42 ? "on" : "";
+      });
+      out.push({ x, w, h, back, wins, id: i });
+      x += w + (back ? hash(i, 3) * 2 : 2 + hash(i, 3) * 5);
+      i++;
+    }
+  }
+  return out;
+})();
 /* ---------- themes ----------
    percussion item: { id, label, icon, sound }
    melodic item:    { id, label, icon, kind:'note'|'soft'|'chord', voice, note|notes } */
@@ -453,16 +477,17 @@ export default function RhythmRunners() {
         )}
 
         {T.amb === "window" && (
-          <>
-            <div className="rr-skyline" />
-            {[...Array(18)].map((_, i) => (
-              <span key={`w${i}`} className="rr-window" style={{
-                left: `${(i * 19 + 6) % 100}%`,
-                bottom: `${8 + ((i * 13) % 55)}%`,
-                animationDelay: `${(i % 6) * 0.9}s`,
-              }} />
+          <div className="rr-city">
+            {SKYLINE.map((b) => (
+              <div key={b.id} className={`rr-bldg ${b.back ? "back" : ""}`}
+                style={{ left: `${b.x}%`, width: `${b.w}%`, height: `${b.h}%` }}>
+                {b.wins.map((st, j) => (
+                  <span key={j} className={`rr-win ${st}`}
+                    style={st === "flick" ? { animationDelay: `${((b.id * 7 + j) % 11) * 0.9}s` } : undefined} />
+                ))}
+              </div>
             ))}
-          </>
+          </div>
         )}
 
         {T.lanes.map((lane, li) => (
@@ -610,24 +635,26 @@ const css = `
 .rr-star.tw{animation:twinkle var(--d,3s) steps(1,end) infinite;}
 .rr-star.big{box-shadow:3px 0 #fff,-3px 0 #fff,0 3px #fff,0 -3px #fff;animation:sparkle var(--d,3s) steps(1,end) infinite;}
 @keyframes sparkle{0%,100%{opacity:.4;transform:scale(.67)}50%{opacity:1;transform:none}}
-.rr-comet{position:absolute;width:44px;height:44px;pointer-events:none;z-index:1;
-  animation:comet 13s steps(260,end) infinite;opacity:0;}
+.rr-comet{position:absolute;width:28px;height:28px;pointer-events:none;z-index:0;
+  animation:comet 25s steps(500,end) 6s infinite;opacity:0;}
 @keyframes comet{
-  0%{left:92%;top:-14%;opacity:1}
-  22%{left:-14%;top:96%;opacity:1}
-  22.01%,100%{left:-14%;top:96%;opacity:0}
+  0%{left:92%;top:-10%;opacity:.3}
+  13%{left:-10%;top:96%;opacity:.3}
+  13.01%,100%{left:-10%;top:96%;opacity:0}
 }
 @keyframes twinkle{0%,100%{opacity:.35}50%{opacity:1}}
-.rr-skyline{
-  position:absolute;inset:0;pointer-events:none;opacity:.45;
-  background-image:
-    repeating-linear-gradient(90deg,#1a1430 0 48px,transparent 48px 82px),
-    repeating-linear-gradient(90deg,#251c42 0 30px,transparent 30px 57px);
-  background-size:100% 62%,100% 44%;
-  background-position:bottom left 12px,bottom left 40px;
-  background-repeat:no-repeat;
+.rr-city{position:absolute;inset:0;pointer-events:none;}
+.rr-bldg{
+  position:absolute;bottom:0;box-sizing:border-box;overflow:hidden;
+  background:rgba(31,26,51,.55);padding:8px 5px;
+  display:grid;grid-template-columns:repeat(auto-fill,6px);grid-auto-rows:6px;gap:6px;
+  justify-content:center;align-content:start;
 }
-.rr-window{position:absolute;width:6px;height:6px;pointer-events:none;background:#ffcc66;animation:twinkle 3.4s steps(1,end) infinite;}
+.rr-bldg.back{background:rgba(44,36,72,.42);}
+.rr-win{width:6px;height:6px;}
+.rr-win.on{background:rgba(255,204,102,.8);}
+.rr-win.flick{background:rgba(255,204,102,.8);animation:flick 7s steps(1,end) infinite;}
+@keyframes flick{0%,65%{opacity:1}65.01%,100%{opacity:0}}
 
 .rr-ground{position:absolute;left:0;right:0;bottom:0;height:12px;pointer-events:none;}
 .rr-ground.aqua{background:linear-gradient(180deg,#a8956a 0 4px,#cdbb8a 4px);}
