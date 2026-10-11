@@ -15,6 +15,7 @@ Every world has two percussion lanes and two melodic lanes. All notes use the C-
 
 - `src/RhythmRunners.jsx`: the game (React + [Tone.js](https://tonejs.github.io/))
 - `src/audioEngine.js`: all the sounds, effects and the per-world level trims
+- `src/pixel.jsx`: the pixel-art sprites (characters, objects, icons) and their palettes
 - `tools/loudness/`: checks that every world sounds equally loud
 - `docs/`: the published site (`index.html` + bundled `assets/app.js`), served by GitHub Pages
 
