@@ -5,7 +5,8 @@
   "description": "A music sequencing game for children: place objects on the characters' paths to make music.",
   "scripts": {
     "build": "esbuild src/main.jsx --bundle --minify --format=esm --jsx=automatic --define:process.env.NODE_ENV=\\\"production\\\" --outfile=docs/assets/app.js",
-    "dev": "esbuild src/main.jsx --bundle --format=esm --jsx=automatic --outfile=docs/assets/app.js --servedir=docs --watch"
+    "dev": "esbuild src/main.jsx --bundle --format=esm --jsx=automatic --outfile=docs/assets/app.js --servedir=docs --watch",
+    "loudness:build": "esbuild tools/loudness/loudness.js --bundle --format=esm --jsx=automatic --outfile=tools/loudness/build/loudness.js"
   },
   "dependencies": {
     "react": "^18.3.1",

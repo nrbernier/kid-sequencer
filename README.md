@@ -14,6 +14,8 @@ Every world has two percussion lanes and two melodic lanes. All notes use the C-
 ## Layout
 
 - `src/RhythmRunners.jsx`: the game (React + [Tone.js](https://tonejs.github.io/))
+- `src/audioEngine.js`: all the sounds, effects and the per-world level trims
+- `tools/loudness/`: checks that every world sounds equally loud
 - `docs/`: the published site (`index.html` + bundled `assets/app.js`), served by GitHub Pages
 
 ## Edit it
@@ -23,3 +25,14 @@ npm install
 npm run dev     # local server with live rebuild
 npm run build   # rebuild docs/assets/app.js before committing
 ```
+
+## Keeping worlds equally loud
+
+After changing any sound, check the loudness balance:
+
+```sh
+npm run loudness:build
+npx esbuild --servedir=.   # then open http://localhost:8000/tools/loudness/ and click
+```
+
+It renders the same pattern in every world and measures perceived loudness (K-weighted, BS.1770), full-range and through a tablet-speaker filter. Adjust `WORLD_TRIM_DB` in `src/audioEngine.js` until the tablet numbers are within about 1 dB.

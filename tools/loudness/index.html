@@ -1,0 +1,14 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Rhythm Runners loudness check</title>
+<pre id="out">Click to measure (needs a click to unlock audio).</pre>
+<script type="module">
+  import "./build/loudness.js";
+  document.body.addEventListener("click", async () => {
+    document.getElementById("out").textContent = "Rendering…";
+    const r = await window.measure();
+    const rows = Object.entries(r).map(([k, v]) =>
+      `${k.padEnd(7)} full ${v.full.integrated.toFixed(1)} LUFS   tablet ${v.tablet.integrated.toFixed(1)} LUFS   loudest moments ${v.tablet.loud10.toFixed(1)}`);
+    document.getElementById("out").textContent = rows.join("\n");
+  });
+</script>
